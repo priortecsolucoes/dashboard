@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import psycopg2
 from datetime import datetime, timedelta
-
+from pytz import timezone
 
 def get_all_data_from_db():
     # Configurações de conexão ao banco de dados
