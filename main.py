@@ -77,7 +77,7 @@ def show_status_table(df):
     status_df = pd.DataFrame(data)
 
     # Calcula o status com base na data atual
-    current_time = datetime.now(timezone('America/Sao_Paulo'))
+    current_time = datetime.now(timezone('America/Sao_Paulo')).replace(tzinfo=None)
     # Converte string para datetime antes de aplicar a lógica
     status_df['datetime_value'] = pd.to_datetime(
         status_df['ÚLTIMA AUTORIZAÇÃO'],
