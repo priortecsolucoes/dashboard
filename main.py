@@ -81,7 +81,7 @@ def show_status_table(df):
     # Converte string para datetime antes de aplicar a lógica
     status_df['datetime_value'] = pd.to_datetime(
         status_df['ÚLTIMA AUTORIZAÇÃO'],
-        format='%d/%m/%Y %H:%M'
+        format='%d/%m/%Y %H:%M:%S'
     )
 
     # Aplica a lógica para definir o STATUS
