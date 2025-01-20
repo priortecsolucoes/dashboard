@@ -84,11 +84,7 @@ def show_status_table(df):
     # Remove a coluna datetime_value antes da exibição
     status_df = status_df[['COMPUTADOR', 'STATUS', 'ÚLTIMA AUTORIZAÇÃO']]
 
-    # Exibição da tabela
-    st.table(status_df.style.applymap(
-        lambda x: "background-color: #dff0d8;" if x == "ATIVO"
-        else "background-color: #f2dede;", subset=["STATUS"]
-    ))
+    return status_df
 
 def show_pie_chart(df):
     # Obter valores das tags do banco de dados
@@ -106,7 +102,7 @@ def show_pie_chart(df):
 
     if total > 0:
         # Criar gráfico de pizza
-        fig, ax = plt.subplots()
+        fig, ax = plt.subplots(figsize=(4, 4))  # Definição do tamanho menor do gráfico
         ax.pie(
             sizes,
             labels=[f"{labels[0]}: {sizes[0]} ({sizes[0]/total:.1%})", 
@@ -117,11 +113,9 @@ def show_pie_chart(df):
         )
         ax.axis('equal')  # Mantém a proporção do gráfico
 
-        # Exibir gráfico no Streamlit
-        st.subheader("Distribuição das Consultas Realizadas")
-        st.pyplot(fig)
+        return fig, sizes
     else:
-        st.warning("Não há consultas realizadas para exibir o gráfico.")
+        return None, None
 
 def main():
     # Configuração da página
@@ -133,8 +127,26 @@ def main():
     # Obter dados do banco de dados
     try:
         df = get_all_data_from_db()
-        show_status_table(df)
-        show_pie_chart(df)  # Exibir gráfico de pizza
+        
+        # Criar layout com colunas
+        col1, col2 = st.columns([2, 1])  # Define proporção 2:1 para tabela e gráfico
+
+        with col1:
+            status_df = show_status_table(df)
+            st.table(status_df.style.applymap(
+                lambda x: "background-color: #dff0d8;" if x == "ATIVO"
+                else "background-color: #f2dede;", subset=["STATUS"]
+            ))
+
+        with col2:
+            fig, sizes = show_pie_chart(df)
+            if fig:
+                st.subheader("Consultas Realizadas")
+                st.pyplot(fig)
+                st.write(f"**Realizados Aprovados:** {sizes[0]}")
+                st.write(f"**Realizados Não Aprovados:** {sizes[1]}")
+            else:
+                st.warning("Não há consultas realizadas para exibir o gráfico.")
 
     except Exception as e:
         st.error(f"Erro ao conectar ao banco de dados: {e}")
