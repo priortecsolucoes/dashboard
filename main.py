@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import psycopg2
+import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
 from pytz import timezone
 
@@ -28,12 +29,14 @@ def get_all_data_from_db():
         WHERE
             tag_value.tag_id = tag.id AND
             tag.name IN (
-            'IMND_ROBO03_AUTORIZACAO_ULTIMO_REGISTRO',
-            'IMND_ROBO04_AUTORIZACAO_ULTIMO_REGISTRO',
-            'IMND_ROBO05_AUTORIZACAO_ULTIMO_REGISTRO',
-            'IMND_ROBO06_AUTORIZACAO_ULTIMO_REGISTRO',
-            'IMND_ROBO07_AUTORIZACAO_ULTIMO_REGISTRO',
-            'IMND_ROBO08_AUTORIZACAO_ULTIMO_REGISTRO'
+                'IMND_ROBO03_AUTORIZACAO_ULTIMO_REGISTRO',
+                'IMND_ROBO04_AUTORIZACAO_ULTIMO_REGISTRO',
+                'IMND_ROBO05_AUTORIZACAO_ULTIMO_REGISTRO',
+                'IMND_ROBO06_AUTORIZACAO_ULTIMO_REGISTRO',
+                'IMND_ROBO07_AUTORIZACAO_ULTIMO_REGISTRO',
+                'IMND_ROBO08_AUTORIZACAO_ULTIMO_REGISTRO',
+                'IMND_MES_ATUAL_REALIZADOS_APROVADOS',
+                'IMND_MES_ATUAL_REALIZADOS_NAO_APROVADOS'
             )
     """
 
@@ -44,7 +47,6 @@ def get_all_data_from_db():
     conn.close()
 
     return df
-
 
 def show_status_table(df):
     # Dados da tabela
@@ -58,18 +60,12 @@ def show_status_table(df):
             "IMND_ROBO8",
         ],
         "ÚLTIMA AUTORIZAÇÃO": [
-            df.loc[df["name"] == "IMND_ROBO03_AUTORIZACAO_ULTIMO_REGISTRO",
-                   "string_value"].values[0],
-            df.loc[df["name"] == "IMND_ROBO04_AUTORIZACAO_ULTIMO_REGISTRO",
-                   "string_value"].values[0],
-            df.loc[df["name"] == "IMND_ROBO05_AUTORIZACAO_ULTIMO_REGISTRO",
-                   "string_value"].values[0],
-            df.loc[df["name"] == "IMND_ROBO06_AUTORIZACAO_ULTIMO_REGISTRO",
-                   "string_value"].values[0],
-            df.loc[df["name"] == "IMND_ROBO07_AUTORIZACAO_ULTIMO_REGISTRO",
-                   "string_value"].values[0],
-            df.loc[df["name"] == "IMND_ROBO08_AUTORIZACAO_ULTIMO_REGISTRO",
-                   "string_value"].values[0],
+            df.loc[df["name"] == "IMND_ROBO03_AUTORIZACAO_ULTIMO_REGISTRO", "string_value"].values[0],
+            df.loc[df["name"] == "IMND_ROBO04_AUTORIZACAO_ULTIMO_REGISTRO", "string_value"].values[0],
+            df.loc[df["name"] == "IMND_ROBO05_AUTORIZACAO_ULTIMO_REGISTRO", "string_value"].values[0],
+            df.loc[df["name"] == "IMND_ROBO06_AUTORIZACAO_ULTIMO_REGISTRO", "string_value"].values[0],
+            df.loc[df["name"] == "IMND_ROBO07_AUTORIZACAO_ULTIMO_REGISTRO", "string_value"].values[0],
+            df.loc[df["name"] == "IMND_ROBO08_AUTORIZACAO_ULTIMO_REGISTRO", "string_value"].values[0],
         ],
     }
 
@@ -78,16 +74,11 @@ def show_status_table(df):
 
     # Calcula o status com base na data atual
     current_time = datetime.now(timezone('America/Sao_Paulo')).replace(tzinfo=None)
-    # Converte string para datetime antes de aplicar a lógica
-    status_df['datetime_value'] = pd.to_datetime(
-        status_df['ÚLTIMA AUTORIZAÇÃO'],
-        format='%d/%m/%Y %H:%M:%S'
-    )
+    status_df['datetime_value'] = pd.to_datetime(status_df['ÚLTIMA AUTORIZAÇÃO'], format='%d/%m/%Y %H:%M:%S')
 
     # Aplica a lógica para definir o STATUS
     status_df['STATUS'] = status_df['datetime_value'].apply(
-        lambda x: 'ATIVO' if current_time -
-        x <= timedelta(hours=1) else 'INATIVO'
+        lambda x: 'ATIVO' if current_time - x <= timedelta(hours=1) else 'INATIVO'
     )
 
     # Remove a coluna datetime_value antes da exibição
@@ -99,6 +90,38 @@ def show_status_table(df):
         else "background-color: #f2dede;", subset=["STATUS"]
     ))
 
+def show_pie_chart(df):
+    # Obter valores das tags do banco de dados
+    realizados_aprovados = df.loc[df["name"] == "IMND_MES_ATUAL_REALIZADOS_APROVADOS", "int_value"].values
+    realizados_nao_aprovados = df.loc[df["name"] == "IMND_MES_ATUAL_REALIZADOS_NAO_APROVADOS", "int_value"].values
+
+    # Verificar se os valores foram encontrados no banco
+    realizados_aprovados = realizados_aprovados[0] if len(realizados_aprovados) > 0 else 0
+    realizados_nao_aprovados = realizados_nao_aprovados[0] if len(realizados_nao_aprovados) > 0 else 0
+
+    # Criar os dados do gráfico
+    labels = ["Realizados Aprovados", "Realizados Não Aprovados"]
+    sizes = [realizados_aprovados, realizados_nao_aprovados]
+    total = sum(sizes)
+
+    if total > 0:
+        # Criar gráfico de pizza
+        fig, ax = plt.subplots()
+        ax.pie(
+            sizes,
+            labels=[f"{labels[0]}: {sizes[0]} ({sizes[0]/total:.1%})", 
+                    f"{labels[1]}: {sizes[1]} ({sizes[1]/total:.1%})"],
+            autopct='%1.1f%%',
+            startangle=90,
+            wedgeprops={"edgecolor": "white"}
+        )
+        ax.axis('equal')  # Mantém a proporção do gráfico
+
+        # Exibir gráfico no Streamlit
+        st.subheader("Distribuição das Consultas Realizadas")
+        st.pyplot(fig)
+    else:
+        st.warning("Não há consultas realizadas para exibir o gráfico.")
 
 def main():
     # Configuração da página
@@ -111,10 +134,10 @@ def main():
     try:
         df = get_all_data_from_db()
         show_status_table(df)
+        show_pie_chart(df)  # Exibir gráfico de pizza
 
     except Exception as e:
         st.error(f"Erro ao conectar ao banco de dados: {e}")
-
 
 if __name__ == "__main__":
     main()
