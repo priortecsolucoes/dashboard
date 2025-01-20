@@ -36,7 +36,8 @@ def get_all_data_from_db():
                 'IMND_ROBO07_AUTORIZACAO_ULTIMO_REGISTRO',
                 'IMND_ROBO08_AUTORIZACAO_ULTIMO_REGISTRO',
                 'IMND_MES_ATUAL_REALIZADOS_APROVADOS',
-                'IMND_MES_ATUAL_REALIZADOS_NAO_APROVADOS'
+                'IMND_MES_ATUAL_REALIZADOS_NAO_APROVADOS',
+                'IMND_MES_ATUAL_PENDENTES'
             )
     """
 
@@ -90,14 +91,16 @@ def show_pie_chart(df):
     # Obter valores das tags do banco de dados
     realizados_aprovados = df.loc[df["name"] == "IMND_MES_ATUAL_REALIZADOS_APROVADOS", "int_value"].values
     realizados_nao_aprovados = df.loc[df["name"] == "IMND_MES_ATUAL_REALIZADOS_NAO_APROVADOS", "int_value"].values
+    pendentes = df.loc[df["name"] == "IMND_MES_ATUAL_PENDENTES", "int_value"].values
 
     # Verificar se os valores foram encontrados no banco
     realizados_aprovados = realizados_aprovados[0] if len(realizados_aprovados) > 0 else 0
     realizados_nao_aprovados = realizados_nao_aprovados[0] if len(realizados_nao_aprovados) > 0 else 0
+    pendentes = pendentes[0] if len(pendentes) > 0 else 0
 
     # Criar os dados do gráfico
-    labels = ["Realizados Aprovados", "Realizados Não Aprovados"]
-    sizes = [realizados_aprovados, realizados_nao_aprovados]
+    labels = ["Realizados Aprovados", "Realizados Não Aprovados", "Pendentes"]
+    sizes = [realizados_aprovados, realizados_nao_aprovados, pendentes]
     total = sum(sizes)
 
     if total > 0:
@@ -105,8 +108,9 @@ def show_pie_chart(df):
         fig, ax = plt.subplots(figsize=(4, 4))  # Definição do tamanho menor do gráfico
         ax.pie(
             sizes,
-            labels=[f"{labels[0]}: {sizes[0]} ({sizes[0]/total:.1%})", 
-                    f"{labels[1]}: {sizes[1]} ({sizes[1]/total:.1%})"],
+            labels=[f"{labels[0]}: {sizes[0]} ({sizes[0]/total:.1%})",
+                    f"{labels[1]}: {sizes[1]} ({sizes[1]/total:.1%})",
+                    f"{labels[2]}: {sizes[2]} ({sizes[2]/total:.1%})"],
             autopct='%1.1f%%',
             startangle=90,
             wedgeprops={"edgecolor": "white"}
@@ -145,6 +149,7 @@ def main():
                 st.pyplot(fig)
                 st.write(f"**Realizados Aprovados:** {sizes[0]}")
                 st.write(f"**Realizados Não Aprovados:** {sizes[1]}")
+                st.write(f"**Pendentes:** {sizes[2]}")
             else:
                 st.warning("Não há consultas realizadas para exibir o gráfico.")
 
