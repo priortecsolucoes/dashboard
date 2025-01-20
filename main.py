@@ -145,7 +145,7 @@ def main():
         with col2:
             fig, sizes = show_pie_chart(df)
             if fig:
-                st.subheader("Consultas Realizadas")
+                st.subheader("Aprovação de Consulta")
                 st.pyplot(fig)
                 st.write(f"**Realizados Aprovados:** {sizes[0]}")
                 st.write(f"**Realizados Não Aprovados:** {sizes[1]}")
