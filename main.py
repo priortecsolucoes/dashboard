@@ -150,7 +150,7 @@ def main():
                 st.subheader("Aprovação de Consulta")
                 st.pyplot(fig)
                 st.write(f"**Aprovados:** {sizes[0]}")
-                st.write(f"**Pendentes:** {sizes[2]}")
+                st.write(f"**Pendentes:** {sizes[1]}")
             else:
                 st.warning("Não há consultas realizadas para exibir o gráfico.")
 
