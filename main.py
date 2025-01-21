@@ -37,7 +37,8 @@ def get_all_data_from_db():
                 'IMND_ROBO08_AUTORIZACAO_ULTIMO_REGISTRO',
                 'IMND_MES_ATUAL_REALIZADOS_APROVADOS',
                 'IMND_MES_ATUAL_REALIZADOS_NAO_APROVADOS',
-                'IMND_MES_ATUAL_PENDENTES'
+                'IMND_MES_ATUAL_PENDENTES',
+                'IMND_MES_ATUAL_APROVADOS'
             )
     """
 
@@ -89,18 +90,20 @@ def show_status_table(df):
 
 def show_pie_chart(df):
     # Obter valores das tags do banco de dados
-    realizados_aprovados = df.loc[df["name"] == "IMND_MES_ATUAL_REALIZADOS_APROVADOS", "int_value"].values
-    realizados_nao_aprovados = df.loc[df["name"] == "IMND_MES_ATUAL_REALIZADOS_NAO_APROVADOS", "int_value"].values
+    #realizados_aprovados = df.loc[df["name"] == "IMND_MES_ATUAL_REALIZADOS_APROVADOS", "int_value"].values
+    #realizados_nao_aprovados = df.loc[df["name"] == "IMND_MES_ATUAL_REALIZADOS_NAO_APROVADOS", "int_value"].values
+    aprovados = df.loc[df["name"] == "IMND_MES_ATUAL_APROVADOS", "int_value"].values
     pendentes = df.loc[df["name"] == "IMND_MES_ATUAL_PENDENTES", "int_value"].values
 
     # Verificar se os valores foram encontrados no banco
-    realizados_aprovados = realizados_aprovados[0] if len(realizados_aprovados) > 0 else 0
-    realizados_nao_aprovados = realizados_nao_aprovados[0] if len(realizados_nao_aprovados) > 0 else 0
+    #realizados_aprovados = realizados_aprovados[0] if len(realizados_aprovados) > 0 else 0
+    #realizados_nao_aprovados = realizados_nao_aprovados[0] if len(realizados_nao_aprovados) > 0 else 0
+    aprovados = aprovados[0] if len(aprovados) > 0 else 0
     pendentes = pendentes[0] if len(pendentes) > 0 else 0
 
     # Criar os dados do gráfico
-    labels = ["Realizados Aprovados", "Realizados Não Aprovados", "Pendentes"]
-    sizes = [realizados_aprovados, realizados_nao_aprovados, pendentes]
+    labels = ["Aprovados", "Pendentes"]
+    sizes = [aprovados, pendentes]
     total = sum(sizes)
 
     if total > 0:
@@ -147,8 +150,7 @@ def main():
             if fig:
                 st.subheader("Aprovação de Consulta")
                 st.pyplot(fig)
-                st.write(f"**Realizados Aprovados:** {sizes[0]}")
-                st.write(f"**Realizados Não Aprovados:** {sizes[1]}")
+                st.write(f"**Aprovados:** {sizes[0]}")
                 st.write(f"**Pendentes:** {sizes[2]}")
             else:
                 st.warning("Não há consultas realizadas para exibir o gráfico.")
