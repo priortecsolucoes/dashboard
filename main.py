@@ -112,8 +112,7 @@ def show_pie_chart(df):
         ax.pie(
             sizes,
             labels=[f"{labels[0]}: {sizes[0]} ({sizes[0]/total:.1%})",
-                    f"{labels[1]}: {sizes[1]} ({sizes[1]/total:.1%})",
-                    f"{labels[2]}: {sizes[2]} ({sizes[2]/total:.1%})"],
+                    f"{labels[1]}: {sizes[1]} ({sizes[1]/total:.1%})"],
             autopct='%1.1f%%',
             startangle=90,
             wedgeprops={"edgecolor": "white"}
