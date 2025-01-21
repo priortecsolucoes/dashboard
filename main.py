@@ -30,7 +30,6 @@ def get_all_data_from_db():
             tag_value.tag_id = tag.id AND
             tag.name IN (
                 'IMND_ROBO03_AUTORIZACAO_ULTIMO_REGISTRO',
-                'IMND_ROBO04_AUTORIZACAO_ULTIMO_REGISTRO',
                 'IMND_ROBO05_AUTORIZACAO_ULTIMO_REGISTRO',
                 'IMND_ROBO06_AUTORIZACAO_ULTIMO_REGISTRO',
                 'IMND_ROBO07_AUTORIZACAO_ULTIMO_REGISTRO',
@@ -55,7 +54,6 @@ def show_status_table(df):
     data = {
         "COMPUTADOR": [
             "IMND_ROBO3",
-            "IMND_ROBO4",
             "IMND_ROBO5",
             "IMND_ROBO6",
             "IMND_ROBO7",
@@ -63,7 +61,6 @@ def show_status_table(df):
         ],
         "ÚLTIMA AUTORIZAÇÃO": [
             df.loc[df["name"] == "IMND_ROBO03_AUTORIZACAO_ULTIMO_REGISTRO", "string_value"].values[0],
-            df.loc[df["name"] == "IMND_ROBO04_AUTORIZACAO_ULTIMO_REGISTRO", "string_value"].values[0],
             df.loc[df["name"] == "IMND_ROBO05_AUTORIZACAO_ULTIMO_REGISTRO", "string_value"].values[0],
             df.loc[df["name"] == "IMND_ROBO06_AUTORIZACAO_ULTIMO_REGISTRO", "string_value"].values[0],
             df.loc[df["name"] == "IMND_ROBO07_AUTORIZACAO_ULTIMO_REGISTRO", "string_value"].values[0],
