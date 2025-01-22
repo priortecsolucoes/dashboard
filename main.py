@@ -37,6 +37,8 @@ def get_all_data_from_db():
                 'IMND_MES_ATUAL_REALIZADOS_APROVADOS',
                 'IMND_MES_ATUAL_REALIZADOS_NAO_APROVADOS',
                 'IMND_MES_ATUAL_PENDENTES',
+                'IMND_MES_ATUAL_INELEGIVEIS',
+                'IMND_MES_ATUAL_NEGADOS',
                 'IMND_MES_ATUAL_APROVADOS'
             )
     """
@@ -91,16 +93,20 @@ def show_pie_chart(df):
     #realizados_nao_aprovados = df.loc[df["name"] == "IMND_MES_ATUAL_REALIZADOS_NAO_APROVADOS", "int_value"].values
     aprovados = df.loc[df["name"] == "IMND_MES_ATUAL_APROVADOS", "int_value"].values
     pendentes = df.loc[df["name"] == "IMND_MES_ATUAL_PENDENTES", "int_value"].values
+    inelegiveis = df.loc[df["name"] == "IMND_MES_ATUAL_INELEGIVEIS", "int_value"].values
+    negados = df.loc[df["name"] == "IMND_MES_ATUAL_NEGADOS", "int_value"].values
 
     # Verificar se os valores foram encontrados no banco
     #realizados_aprovados = realizados_aprovados[0] if len(realizados_aprovados) > 0 else 0
     #realizados_nao_aprovados = realizados_nao_aprovados[0] if len(realizados_nao_aprovados) > 0 else 0
     aprovados = aprovados[0] if len(aprovados) > 0 else 0
     pendentes = pendentes[0] if len(pendentes) > 0 else 0
+    inelegiveis = inelegiveis[0] if len(inelegiveis) > 0 else 0
+    negados = negados[0] if len(negados) > 0 else 0
 
     # Criar os dados do gráfico
     labels = ["Aprovados", "Pendentes"]
-    sizes = [aprovados, pendentes]
+    sizes = [aprovados, pendentes, inelegiveis, negados]
     total = sum(sizes)
 
     if total > 0:
@@ -109,7 +115,9 @@ def show_pie_chart(df):
         ax.pie(
             sizes,
             labels=[f"{labels[0]}: {sizes[0]} ({sizes[0]/total:.1%})",
-                    f"{labels[1]}: {sizes[1]} ({sizes[1]/total:.1%})"],
+                    f"{labels[1]}: {sizes[1]} ({sizes[1]/total:.1%})",
+                    f"{labels[2]}: {sizes[2]} ({sizes[2]/total:.1%})",
+                    f"{labels[3]}: {sizes[3]} ({sizes[3]/total:.1%})"],
             autopct='%1.1f%%',
             startangle=90,
             wedgeprops={"edgecolor": "white"}
