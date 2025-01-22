@@ -105,7 +105,7 @@ def show_pie_chart(df):
     negados = negados[0] if len(negados) > 0 else 0
 
     # Criar os dados do gráfico
-    labels = ["Aprovados", "Pendentes"]
+    labels = ["Aprovados", "Pendentes", "Inelegíveis", "Negados"]
     sizes = [aprovados, pendentes, inelegiveis, negados]
     total = sum(sizes)
 
