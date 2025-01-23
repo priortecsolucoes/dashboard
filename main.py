@@ -133,7 +133,7 @@ def main():
     st.set_page_config(page_title="Portal do Cliente", layout="wide")
 
     # Título do dashboard
-    st.title("IMND - Portal do Cliente")
+    st.title("IMND - Portal do Cliente - Priortec")
 
     # Obter dados do banco de dados
     try:
