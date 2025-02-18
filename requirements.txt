@@ -2,11 +2,10 @@ streamlit
 psycopg2
 matplotlib
 pandas as pd
-tkinter import Tk, filedialog
-matplotlib.pyplot as plt
-pandas as pd
-seaborn as sns
-datetime import datetime, timedelta
-pytz import timezone
+tkinter 
+matplotlib.pyplot 
+seaborn 
+datetime 
+pytz 
 configparser
-dotenv import load_dotenv
+dotenv 
