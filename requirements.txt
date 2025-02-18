@@ -2,7 +2,6 @@ streamlit
 psycopg2
 matplotlib
 pandas 
-tkinter 
 matplotlib.pyplot 
 seaborn 
 datetime 
