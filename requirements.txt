@@ -1,7 +1,7 @@
 streamlit
 psycopg2
 matplotlib
-pandas as pd
+pandas 
 tkinter 
 matplotlib.pyplot 
 seaborn 
