@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import psycopg2
-from tkinter import Tk, filedialog
+
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
@@ -185,17 +185,7 @@ class main:
             unsafe_allow_html=True
         )
 
-        if st.button("Baixar Consultas Não Autorizadas"):
-            try:
-                root = Tk()
-                root.withdraw()
-                root.attributes('-topmost', True)
-                caminho_arquivo = filedialog.asksaveasfilename(defaultextension=".csv", filetypes=[("CSV files", "*.csv")], title="Salvar arquivo como")
-                if caminho_arquivo:
-                    df[df["name"] == "IMND_MES_ATUAL_FATURAVEIS_NAO_AUTORIZADAS"].to_csv(caminho_arquivo, index=False)
-                    st.success(f"Arquivo salvo em: {caminho_arquivo}")
-            except Exception as e:
-                st.error(f"Erro ao salvar o arquivo: {e}")
+
 
 
     def showPendingTable(self, df):
@@ -262,10 +252,7 @@ class main:
                 st.subheader("📈 Aprovação de Consultas")
                 self.showApprovalChart(df)
                 self.showLastExecutionDate(df)
-           
-                
-            
-            
+
         
         except Exception as e:
             st.error(f"❌ Ocorreu um erro inesperado: {str(e)}")
