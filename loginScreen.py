@@ -1,6 +1,7 @@
 import streamlit as st
 import configparser
 import psycopg2
+import os
 import pandas as pd
 from dotenv import load_dotenv
 
@@ -13,17 +14,20 @@ st.markdown("""
 class LoginScreen:
     def __init__(self):
         load_dotenv()
-        self.config = configparser.ConfigParser()
-        self.config.read("config.ini")
+        self.dbHost = os.getenv('DBHOST')
+        self.dbName = os.getenv('DBNAME')
+        self.dbUser =  os.getenv('DBUSER')
+        self.dbPassword = os.getenv('DBPASSWORD')
+        self.dbPort =  os.getenv('DBPORT')
 
     def getDbConnection(self):
         try:
             return psycopg2.connect(
-                host=self.config['configuracoes']['host'],
-                database=self.config['configuracoes']['database'],
-                user=self.config['configuracoes']['user'],
-                password=self.config['configuracoes']['password'],
-                port=self.config['configuracoes']['port']
+                host=self.dbHost,
+                database=self.dbName,
+                user=self.dbUser,
+                password=self.dbPassword,
+                port=self.dbPort
             )
         except Exception as e:
             st.error(f"Erro ao conectar ao banco de dados: {e}")
