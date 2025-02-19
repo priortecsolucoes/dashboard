@@ -35,11 +35,12 @@ st.markdown("""
 class main:
     def __init__(self):
        
-        self.dbHost='roundhouse.proxy.rlwy.net',
-        self.dbName='railway',
-        self.dbUser ='postgres',
-        self.dbPassword="XWhTqAztzzYuAqvUcgWCUJUJmnEJliDK",
-        self.dbPort = 28938
+        load_dotenv()
+        self.dbHost = os.getenv('DBHOST')
+        self.dbName = os.getenv('DBNAME')
+        self.dbUser =  os.getenv('DBUSER')
+        self.dbPassword = os.getenv('DBPASSWORD')
+        self.dbPort =  os.getenv('DBPORT')
         self.conn = psycopg2.connect(
             host=self.dbHost,
             database=self.dbName,
