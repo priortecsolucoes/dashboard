@@ -297,11 +297,13 @@ class main:
 
                 # Criando um container para os botões centralizados
                 st.markdown('<div class="custom-button-container">', unsafe_allow_html=True)
-                col_btn1, col_btn2 = st.columns([1, 1])
+                col_btn1, col_btn2,col_btn3 = st.columns(3)
                 with col_btn1:
                     st.button('Baixar Consultas Não Autorizadas')
                 with col_btn2:
                     st.button('Baixar Consultas Pendentes Atrasadas')
+                with col_btn3:
+                    st.button('Baixar Consultas Autorizadas')
                 st.markdown('</div>', unsafe_allow_html=True)
             
             with col2:
