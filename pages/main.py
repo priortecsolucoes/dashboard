@@ -13,6 +13,12 @@ from dotenv import load_dotenv
 st.set_page_config(page_title="Portal IMND", layout="wide")
 st.markdown("""
     <style>
+        section[data-testid="stSidebar"] {display: none;}
+    </style>
+""", unsafe_allow_html=True)
+st.markdown("""
+st.markdown("""
+    <style>
         body {
             background-color: #0E1117;
             color: white;
