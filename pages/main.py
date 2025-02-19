@@ -273,29 +273,26 @@ class main:
                 with inner_col2:
                     self.showPendingTable(df)
 
+                # Adicionando espaço antes dos botões e centralizando-os
                 st.markdown("""
                     <style>
-                        .custom-button {
-                            margin-top: 15px;
+                        .custom-button-container {
+                            display: flex;
+                            gap: 20px;
+                            margin: auto;
                         }
                     </style>
                 """, unsafe_allow_html=True)
 
-    
-                btn_col1, btn_col2, btn_col3 = st.columns(3)
-                with btn_col1:
-                    st.markdown('<div class="custom-button">', unsafe_allow_html=True)
+                # Criando um container para os botões centralizados
+                st.markdown('<div class="custom-button-container">', unsafe_allow_html=True)
+                col_btn1, col_btn2 = st.columns([1, 1])
+                with col_btn1:
                     st.button('Baixar Consultas Não Autorizadas')
-                    st.markdown('</div>', unsafe_allow_html=True)
-                with btn_col2:
-                    st.markdown('<div class="custom-button">', unsafe_allow_html=True)
+                with col_btn2:
                     st.button('Baixar Consultas Pendentes Atrasadas')
-                    st.markdown('</div>', unsafe_allow_html=True)
-                with btn_col3:
-                    st.markdown('<div class="custom-button">', unsafe_allow_html=True)
-                    st.button('Baixar Aprovação de Consultas')
-                    st.markdown('</div>', unsafe_allow_html=True)
-
+                st.markdown('</div>', unsafe_allow_html=True)
+            
             with col2:
                 st.subheader("📈 Aprovação de Consultas")
                 self.showApprovalChart(df)
@@ -303,7 +300,6 @@ class main:
         
         except Exception as e:
             st.error(f"❌ Ocorreu um erro inesperado: {str(e)}")
-
 if __name__ == "__main__":
     app = main()
     app.main()
