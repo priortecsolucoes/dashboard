@@ -1,11 +1,13 @@
 import streamlit as st
 import pandas as pd
 import psycopg2
+
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 from datetime import datetime, timedelta
 from pytz import timezone
+import configparser
 import os
 from dotenv import load_dotenv
 
@@ -16,7 +18,6 @@ st.markdown("""
         section[data-testid="stSidebar"] {display: none;}
     </style>
 """, unsafe_allow_html=True)
-st.markdown("""
 st.markdown("""
     <style>
         body {
@@ -34,11 +35,11 @@ st.markdown("""
 class main:
     def __init__(self):
        
-        self.dbHost = os.getenv('DBHOST')
-        self.dbName = os.getenv('DBNAME')
-        self.dbUser =  os.getenv('DBUSER')
-        self.dbPassword = os.getenv('DBPASSWORD')
-        self.dbPort =  os.getenv('DBPORT')
+        self.dbHost='roundhouse.proxy.rlwy.net',
+        self.dbName='railway',
+        self.dbUser ='postgres',
+        self.dbPassword="XWhTqAztzzYuAqvUcgWCUJUJmnEJliDK",
+        self.dbPort = 28938
         self.conn = psycopg2.connect(
             host=self.dbHost,
             database=self.dbName,
@@ -109,11 +110,12 @@ class main:
         dfFiltered['label'] = dfFiltered['name'].map(labels)
         dfFiltered = dfFiltered[['label', 'int_value']]
 
+        # Ordenando para garantir que "Aprovados" seja o primeiro
         dfFiltered = dfFiltered.set_index('label').loc[['Aprovados',  'Pendentes', 'Inelegíveis', 'Negados']].reset_index()
 
         total = dfFiltered['int_value'].sum()
 
-        
+        # Definindo a paleta de cores para garantir que "Aprovados" será verde
         palette = ['#4CAF50', '#F44336', '#FF9800', '#9E9E9E', '#2196F3']
 
         plt.figure(figsize=(8, 6), facecolor='#0E1117')
@@ -130,7 +132,7 @@ class main:
         
         for i, (label, value) in enumerate(zip(dfFiltered['label'], dfFiltered['int_value'])):
             percentage = (value / total) * 100 if total > 0 else 0
-           
+            # Ajuste da margem com valor maior para o 'y'
             ax.text(i, value + 200, f"{value} ({percentage:.1f}%)", ha='center', fontsize=12, fontweight='bold', color='white')
         
         st.pyplot(plt)
@@ -150,6 +152,7 @@ class main:
                     width: 100px;
                     padding: 10px;
                     margin: 10px auto;
+                    margin-left: 0px;
                 }
                 .table-box table {
                     width: 100px;
@@ -199,6 +202,7 @@ class main:
                     padding: 10px;
                     height: 200px;
                     margin: 10px auto;
+                    margin-left: 0px;
                 }
 
                 .table-box table {
@@ -306,6 +310,8 @@ class main:
         
         except Exception as e:
             st.error(f"❌ Ocorreu um erro inesperado: {str(e)}")
+
+
 if __name__ == "__main__":
     app = main()
     app.main()
