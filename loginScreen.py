@@ -21,15 +21,16 @@ class LoginScreen:
         self.dbUser =  os.getenv('DBUSER')
         self.dbPassword = os.getenv('DBPASSWORD')
         self.dbPort =  os.getenv('DBPORT')
+        
 
     def getDbConnection(self):
         try:
             return psycopg2.connect(
-                host=self.dbHost,
-                database=self.dbName,
-                user=self.dbUser,
-                password=self.dbPassword,
-                port=self.dbPort
+                host= self.dbHost,
+                database= self.dbName,
+                user= self.dbUser,
+                password= self.dbPassword,
+                port= self.dbPort
             )
         except Exception as e:
             st.error(f"Erro ao conectar ao banco de dados: {e}")
@@ -66,6 +67,7 @@ class LoginScreen:
 
             if submitButton:
                 companyId = self.authenticateUser(username,password)
+           
                 accessLevel = self.get_user_access(username)
                 if companyId:
                     st.session_state["loggedIn"] = True
@@ -116,11 +118,6 @@ class LoginScreen:
         else:
             self.loginScreen()
             
-
-if __name__ == "__main__":
-    loginApp = LoginScreen()
-    loginApp.execute()
-
 
 if __name__ == "__main__":
     loginApp = LoginScreen()
