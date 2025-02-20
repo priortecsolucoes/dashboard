@@ -66,7 +66,6 @@ class LoginScreen:
 
             if submitButton:
                 companyId = self.authenticateUser(username,password)
-                st.write(companyId)
                 accessLevel = self.get_user_access(username)
                 if companyId:
                     st.session_state["loggedIn"] = True
