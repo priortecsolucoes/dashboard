@@ -1,7 +1,4 @@
-import streamlit as st
-import pandas as pd
 import psycopg2
-
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
@@ -13,23 +10,16 @@ from dotenv import load_dotenv
 
 
 st.set_page_config(page_title="Portal IMND", layout="wide")
-st.markdown("""
+pagesAcess = st.session_state.get("pagesAcess")
+if pagesAcess != 'admin':
+    st.markdown("""
     <style>
         section[data-testid="stSidebar"] {display: none;}
-        div.block-container {padding-top: 13px !important;}
-  
-    
-    </style>
-""", unsafe_allow_html=True)
-st.markdown("""
-    <style>
-        body {
-            background-color: #0E1117;
-            color: white;
+        .e14lo1l1  {
+            display: none !important;
         }
-        .stApp {
-            background-color: #0E1117;
-            color: white;
+        div.block-container {padding-top: 13px !important;}
+     
         }
     </style>
 """, unsafe_allow_html=True)
