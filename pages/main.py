@@ -17,7 +17,7 @@ st.markdown("""
     <style>
         section[data-testid="stSidebar"] {display: none;}
         div.block-container {padding-top: 10px !important;}
-        h1,h2{
+        *{
         z-index: 9999px;
         }
     
