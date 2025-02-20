@@ -16,7 +16,7 @@ st.set_page_config(page_title="Portal IMND", layout="wide")
 st.markdown("""
     <style>
         section[data-testid="stSidebar"] {display: none;}
-        data-testid="stHeader"], .stAppHeader ;.st-emotion-cache-h4xjwg;.e10jh26i0 {
+        data-testid="stHeader"], .stAppHeader ,.st-emotion-cache-h4xjwg,.e10jh26i0 {
             display: none !important;
         }
         div.block-container {padding-top: 0px !important;}
