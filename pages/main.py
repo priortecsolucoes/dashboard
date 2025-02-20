@@ -16,7 +16,7 @@ st.set_page_config(page_title="Portal IMND", layout="wide")
 st.markdown("""
     <style>
         section[data-testid="stSidebar"] {display: none;}
-        div.block-container {padding-top: 0px !important;}
+        div.block-container {padding-top: 50px !important;}
     </style>
 """, unsafe_allow_html=True)
 st.markdown("""
