@@ -14,6 +14,12 @@ from dotenv import load_dotenv
 st.set_page_config(page_title="Portal IMND", layout="wide")
 pagesAcess = st.session_state.get("pagesAcess")
 access = pagesAcess[0]
+st.markdown("""
+    <style>
+        div.block-container {padding-top: 20px !important;}
+        }
+    </style>
+    """, unsafe_allow_html=True)
 if 'admin' not in access:
     st.markdown("""
     <style>
@@ -21,7 +27,6 @@ if 'admin' not in access:
         .e14lo1l1  {
             display: none !important;
         }
-        div.block-container {padding-top: 20px !important;}
      
         }
     </style>
@@ -30,7 +35,6 @@ else:
     st.markdown("""
     <style>
         section[data-testid="stSidebar"] {display: block;}
-        div.block-container {padding-top: 20px !important;}
      
         }
     </style>
