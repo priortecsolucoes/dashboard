@@ -8,3 +8,4 @@ datetime
 pytz 
 configparser
 python-dotenv
+requests
