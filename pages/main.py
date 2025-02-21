@@ -21,7 +21,7 @@ if 'admin' not in access:
         .e14lo1l1  {
             display: none !important;
         }
-        div.block-container {padding-top: 15px !important;}
+        div.block-container {padding-top: 20px !important;}
      
         }
     </style>
@@ -30,7 +30,7 @@ else:
     st.markdown("""
     <style>
         section[data-testid="stSidebar"] {display: block;}
-        div.block-container {padding-top: 15px !important;}
+        div.block-container {padding-top: 20px !important;}
      
         }
     </style>
