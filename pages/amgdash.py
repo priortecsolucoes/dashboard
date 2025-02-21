@@ -14,7 +14,7 @@ if 'admin' not in access:
         .e14lo1l1  {
             display: none !important;
         }
-        div.block-container {padding-top: 13px !important;}
+        div.block-container {padding-top: 15px !important;}
      
         }
     </style>
