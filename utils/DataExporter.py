@@ -18,7 +18,7 @@ class DataExporter:
         self.pendingAuthorizationInArrearsCurrentMonth = []
         self.billableNotAuthorized = []
         self.authorizedBillable = []
-        self.headers = 
+        self.headers = os.getenv("IMND_ACCESS_TOKEN")
 
     def requestWithRetries(self, url, maxRetries=2):
         attempt = 0
