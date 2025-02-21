@@ -56,7 +56,7 @@ class main:
             password=self.dbPassword,
             port=self.dbPort
         )
-    
+        self.teste = DataExporter()
     def getAllDataFromDb(self):
         try:
             query = """
@@ -305,13 +305,26 @@ class main:
 
                 # Criando um container para os botões centralizados
                 st.markdown('<div class="custom-button-container">', unsafe_allow_html=True)
-                col_btn1, col_btn2,col_btn3 = st.columns(3)
+                col_btn1, col_btn2, col_btn3 = st.columns(3)
+
                 with col_btn1:
-                    st.button('Baixar Consultas Não Autorizadas')
+                    if st.button('Baixar Consultas Não Autorizadas'):
+                        st.toast('Baixando Consultas Não Autorizadas...', icon="⏳")
+                        time.sleep(5)
+                        self.teste.processNotBillableQueries()
+
                 with col_btn2:
-                    st.button('Baixar Consultas Pendentes Atrasadas')
+                    if st.button('Baixar Consultas Pendentes Atrasadas'):
+                        st.toast('Baixando Consultas Pendentes Atrasadas...', icon="⏳")
+                        time.sleep(5)
+                        self.teste.checkPendingAuthorizationForCurrentMonth()
+
                 with col_btn3:
-                    st.button('Baixar Consultas Autorizadas')
+                    if st.button('Baixar Consultas Autorizadas'):
+                        st.toast('Baixando Consultas Autorizadas...', icon="⏳")
+                        time.sleep(5)
+                        self.teste.processBillableQueries()
+
                 st.markdown('</div>', unsafe_allow_html=True)
             
             with col2:
