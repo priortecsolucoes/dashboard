@@ -52,8 +52,11 @@ class DataExporter:
             self.allNodes = []
 
             while hasMore:
-                apiUrl = (f"https://imnd.com.br/api/automation/appointments?page={page}&status=scheduled,fulfilled,notaccomplished&limit=1000&date_start={dateStart}&date_end={dateEnd}")
+                apiUrl = (f"https://imnd.com.br/api/automation/appointments?page={page}&"
+                          f"status=scheduled,fulfilled,notaccomplished&limit=1000&"
+                          f"date_start={dateStart}&date_end={dateEnd}")
                 print(f"🔄 Requisitando página {page}...")
+                time.sleep(2)
                 requisicao = self.requestWithRetries(apiUrl)
                 if requisicao is None:
                     break
