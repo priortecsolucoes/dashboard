@@ -143,9 +143,11 @@ class DataExporter:
         print(f"🔍 Total de registros faturáveis AUTORIZADOS: {len(self.authorizedBillable)}")
         self.exportBillableToExcel()
     def exportToExcel(self):
+        print("Dados encontrados em:", self.pendingAuthorizationInArrearsCurrentMonth)
         if not self.pendingAuthorizationInArrearsCurrentMonth:
             print("❌ Nenhum dado para exportar.")
             return
+        print("Dados encontrados antes de criar o dataFrame:", self.pendingAuthorizationInArrearsCurrentMonth)
         df = pd.DataFrame(self.pendingAuthorizationInArrearsCurrentMonth)
 
         if 'metas' in df.columns:
