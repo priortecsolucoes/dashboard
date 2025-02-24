@@ -9,7 +9,7 @@ from pytz import timezone
 import configparser
 import os
 from dotenv import load_dotenv
-
+from utils.DataExporter import DataExporter
 
 st.set_page_config(page_title="Portal IMND", layout="wide")
 pagesAcess = st.session_state.get("pagesAcess")
@@ -56,6 +56,8 @@ class main:
             password=self.dbPassword,
             port=self.dbPort
         )
+        self.headers = os.getenv('IMND_ACCESS_TOKEN')
+        self.teste = DataExporter()
     def getAllDataFromDb(self):
         try:
             query = """
@@ -309,15 +311,19 @@ class main:
                 with col_btn1:
                     if st.button('Baixar Consultas Não Autorizadas'):
                         st.toast('Baixando Consultas Não Autorizadas...', icon="⏳")
-
+                        time.sleep(5)
+                        self.teste.processNotBillableQueries()
+                        
                 with col_btn2:
                     if st.button('Baixar Consultas Pendentes Atrasadas'):
                         st.toast('Baixando Consultas Pendentes Atrasadas...', icon="⏳")
-
+                        time.sleep(5)
+                        self.teste.checkPendingAuthorizationForCurrentMonth()
                 with col_btn3:
                     if st.button('Baixar Consultas Autorizadas'):
                         st.toast('Baixando Consultas Autorizadas...', icon="⏳")
-                       
+                        time.sleep(5)
+                        self.teste.processBillableQueries()
 
                 st.markdown('</div>', unsafe_allow_html=True)
             
