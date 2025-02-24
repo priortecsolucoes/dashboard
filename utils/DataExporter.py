@@ -5,6 +5,7 @@ import requests
 import pandas as pd
 from collections import Counter
 from dotenv import load_dotenv
+import os
 class DataExporter:
     def __init__(self):
         load_dotenv()
