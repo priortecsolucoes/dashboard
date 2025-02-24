@@ -10,4 +10,3 @@ configparser
 python-dotenv
 requests
 datetime
-time
