@@ -10,7 +10,7 @@ import configparser
 import os
 from dotenv import load_dotenv
 from utils.DataExporter import DataExporter
-
+import time
 st.set_page_config(page_title="Portal IMND", layout="wide")
 pagesAcess = st.session_state.get("pagesAcess")
 if not pagesAcess:
