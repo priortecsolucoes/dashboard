@@ -58,7 +58,11 @@ class DataExporter:
                 print(f"🔄 Requisitando página {page}...")
                 print(apiUrl)
                 time.sleep(2)
-                requisicao = self.requestWithRetries(apiUrl)
+                try:
+                    requisicao = self.requestWithRetries(apiUrl)
+                except Exception as e:
+                    print(f"❌ Erro na requisição: {e}")
+                    break
                 if requisicao is None:
                     break
                 try:
