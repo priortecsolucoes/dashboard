@@ -6,6 +6,8 @@ from io import BytesIO
 # Configuração do modo escuro
 st.set_page_config(page_title="Portal AMG", layout="wide")
 pagesAcess = st.session_state.get("pagesAcess")
+if not pagesAcess:
+    st.switch_page("loginScreen.py")
 access = pagesAcess[0]
 if 'admin' not in access:
     st.markdown("""
