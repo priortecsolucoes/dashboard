@@ -29,6 +29,8 @@ class DataExporter:
                 return response
             except requests.RequestException as e:
                 print(f"⚠️ Erro na requisição ({attempt + 1}/{maxRetries}): {e}")
+                if attempt == maxRetries:
+                    print("🚨 Tentativas esgotadas. Verifique sua conexão ou a API.")
             attempt += 1
             time.sleep(5)
         print("❌ Falha ao obter dados da API.")
@@ -64,27 +66,23 @@ class DataExporter:
                     print(f"❌ Erro ao processar JSON: {e}")
                     break
                 time.sleep(5)
-            aprovados = []
-            for node in self.allNodes:
-                    tsStatus = node.get("metas", {}).get("ts_status", None)
 
-                    if tsStatus == "APROVADO":
-                        aprovados.append(node)
+            aprovados = [node for node in self.allNodes if node.get("metas", {}).get("ts_status") == "APROVADO"]
             return self.allNodes
         except Exception as erro:
             print("Erro ao carregar dados", erro)
+
     def checkPendingAuthorizationForCurrentMonth(self):
-        nodes = self.loadData()
         today = date.today()
         limitDate = today - timedelta(days=3)
-        for node in nodes:
+        for node in self.allNodes:
             try:
                 nodeDateTimeStr = node.get("data", "01/01/1970")
                 nodeDateTime = datetime.strptime(nodeDateTimeStr, "%d/%m/%Y").date()
                 nodeMotivation = (node.get("motivacao") or "").lower().strip()
                 nodeStatus = node.get("metas", {}).get("ts_status")
-                
-                if (limitDate <= nodeDateTime or nodeDateTime > today) and \
+
+                if (limitDate <= nodeDateTime <= today) and \
                    nodeMotivation in self.motivations and \
                    (nodeStatus is None or nodeStatus == ""):
                     print(f"🟠 Consulta autorização pendente atrasada: {node['data']}")
@@ -92,13 +90,13 @@ class DataExporter:
             except ValueError as erro:
                 print(f"❌ Erro ao converter data '{node.get('data', 'Desconhecida')}': {erro}")
         self.exportToExcel()
+
     def processNotBillableQueries(self):
-        nodes = self.loadData()
         today = date.today()
         limitDate = today - timedelta(days=3)
         startOfMonth = today.replace(day=1)
 
-        for node in nodes:
+        for node in self.allNodes:
             try:
                 nodeDateTimeStr = node.get("data", "01/01/1970")
                 nodeDateTime = datetime.strptime(nodeDateTimeStr, "%d/%m/%Y").date()
@@ -113,19 +111,18 @@ class DataExporter:
 
         print(f"🔍 Total de registros faturáveis NÃO autorizados: {len(self.billableNotAuthorized)}")
         self.exportNotBillableToExcel()
-        
+
     def processBillableQueries(self):
-        nodes = self.loadData()
         today = date.today()
         limitDate = today - timedelta(days=3)
-        
-        for node in nodes:
+
+        for node in self.allNodes:
             try:
                 nodeDateTimeStr = node.get("data", "01/01/1970")
                 nodeDateTime = datetime.strptime(nodeDateTimeStr, "%d/%m/%Y").date()
                 nodeMotivation = (node.get("motivacao") or "").lower().strip()
                 nodeStatus = (node.get("metas", {}).get("ts_status") or "").lower().strip()
-                
+
                 if nodeDateTime <= limitDate and nodeMotivation in self.motivations and nodeStatus == "aprovado":
                     print(f"✅ Consulta faturável AUTORIZADA encontrada: {node['data']}")
                     self.authorizedBillable.append(node)
@@ -134,14 +131,15 @@ class DataExporter:
 
         print(f"🔍 Total de registros faturáveis AUTORIZADOS: {len(self.authorizedBillable)}")
         self.exportBillableToExcel()
+
     def exportToExcel(self):
         if not self.pendingAuthorizationInArrearsCurrentMonth:
             print("❌ Nenhum dado para exportar.")
             return
         df = pd.DataFrame(self.pendingAuthorizationInArrearsCurrentMonth)
-
         if 'metas' in df.columns:
             df.drop(columns=['metas'], inplace=True)
+        df.loc[:, 'label'] = df['data']  # Exemplo para evitar view/copy warning
 
         fileName = f"Registros_Autorizacoes_Pendentes_Atrasadas_{datetime.now().strftime('%Y%m%d')}.xlsx"
         df.to_excel(fileName, index=False)
@@ -152,9 +150,9 @@ class DataExporter:
             print("❌ Nenhum dado faturável NÃO autorizado para exportar.")
             return
         df = pd.DataFrame(self.billableNotAuthorized)
-
         if 'metas' in df.columns:
             df.drop(columns=['metas'], inplace=True)
+        df.loc[:, 'label'] = df['data']
 
         fileName = f"Registros_Nao_Faturaveis_{datetime.now().strftime('%Y%m%d')}.xlsx"
         df.to_excel(fileName, index=False)
@@ -165,9 +163,9 @@ class DataExporter:
             print("❌ Nenhum dado faturável autorizado para exportar.")
             return
         df = pd.DataFrame(self.authorizedBillable)
-
         if 'metas' in df.columns:
             df.drop(columns=['metas'], inplace=True)
+        df.loc[:, 'label'] = df['data']
 
         fileName = f"Registros_Faturaveis_Autorizados_{datetime.now().strftime('%Y%m%d')}.xlsx"
         df.to_excel(fileName, index=False)
@@ -175,7 +173,11 @@ class DataExporter:
 
     def run(self):
         self.loadData()
+        self.checkPendingAuthorizationForCurrentMonth()
+        self.processNotBillableQueries()
+        self.processBillableQueries()
 
 if __name__ == "__main__":
     exporter = DataExporter()
     exporter.run()
+
