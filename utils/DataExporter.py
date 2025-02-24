@@ -26,6 +26,8 @@ class DataExporter:
         attempt = 0
         while attempt <= maxRetries:
             try:
+                print(apiUrl)
+                print(self.headers)
                 response = requests.get(url, headers=self.headers)
                 response.raise_for_status()
                 return response
@@ -58,7 +60,9 @@ class DataExporter:
                 if requisicao is None:
                     break
                 try:
+                    print("Acessando a variavel data")
                     data = requisicao.json()
+                    print("Resposta da variavel data", data)
                     self.allNodes.extend(data.get("nodes", []))
                     hasMore = data.get("metadata", {}).get("pagination", {}).get("has_more", False)
                     page += 1
@@ -69,7 +73,6 @@ class DataExporter:
             aprovados = []
             for node in self.allNodes:
                     tsStatus = node.get("metas", {}).get("ts_status", None)
-
                     if tsStatus == "APROVADO":
                         aprovados.append(node)
             return self.allNodes
