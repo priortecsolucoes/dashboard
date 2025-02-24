@@ -13,6 +13,8 @@ from utils.DataExporter import DataExporter
 
 st.set_page_config(page_title="Portal IMND", layout="wide")
 pagesAcess = st.session_state.get("pagesAcess")
+if not pagesAcess:
+    st.switch_page("loginScreen.py")
 access = pagesAcess[0]
 st.markdown("""
     <style>
