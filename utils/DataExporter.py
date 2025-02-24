@@ -73,7 +73,6 @@ class DataExporter:
                 except Exception as e:
                     print(f"❌ Erro ao processar JSON: {e}")
                     break
-                time.sleep(5)
             aprovados = []
             for node in self.allNodes:
                     tsStatus = node.get("metas", {}).get("ts_status", None)
