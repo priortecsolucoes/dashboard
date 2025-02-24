@@ -29,8 +29,6 @@ class DataExporter:
         attempt = 0
         while attempt <= maxRetries:
             try:
-                print(url)
-                print(self.headers)
                 response = requests.get(url, headers=self.headers)
                 response.raise_for_status()
                 return response
@@ -59,19 +57,15 @@ class DataExporter:
                           f"status=scheduled,fulfilled,notaccomplished&limit=1000&"
                           f"date_start={dateStart}&date_end={dateEnd}")
                 print(f"🔄 Requisitando página {page}...")
-                print(apiUrl)
-                time.sleep(2)
                 try:
                     requisicao = self.requestWithRetries(apiUrl)
-                except Exception as e:
-                    print(f"❌ Erro na requisição: {e}")
+                except Exception as erro:
+                    print(f"❌ Erro na requisição: {erro}")
                     break
                 if requisicao is None:
                     break
                 try:
-                    print("Acessando a variavel data")
                     data = requisicao.json()
-                    print("Resposta da variavel data", data)
                     self.allNodes.extend(data.get("nodes", []))
                     hasMore = data.get("metadata", {}).get("pagination", {}).get("has_more", False)
                     page += 1
