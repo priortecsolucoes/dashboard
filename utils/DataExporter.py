@@ -4,9 +4,10 @@ import calendar
 import requests
 import pandas as pd
 from collections import Counter
-
+from dotenv import load_dotenv
 class DataExporter:
     def __init__(self):
+        load_dotenv()
         self.motivations = {
             "atendimento recorrente",
             "atendimento sos",
