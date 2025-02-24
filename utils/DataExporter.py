@@ -21,7 +21,7 @@ class DataExporter:
         self.billableNotAuthorized = []
         self.authorizedBillable = []
         self.headers = {
-             "Authorization": os.getenv("IMND_ACCESS_TOKEN"),
+            "Authorization": os.getenv("IMND_ACCESS_TOKEN"),
             "Content-Type": "application/json"
         }
 
