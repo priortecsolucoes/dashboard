@@ -277,14 +277,14 @@ class main:
     
     def main(self):
         st.subheader("📊 IMND - Portal do Cliente - Priortec")
-        
+       
         try:
             with st.spinner('Carregando dados...'):
                 df = self.getAllDataFromDb()
             if df.empty:
                 st.warning("Nenhum dado foi retornado da consulta.")
                 return
-
+ 
             col1, col2 = st.columns([1, 0.5])
             with col1:
                 st.subheader("📌 Status dos Computadores")
@@ -294,7 +294,7 @@ class main:
                     self.showBillingTable(df)
                 with inner_col2:
                     self.showPendingTable(df)
-
+ 
                 # Adicionando espaço antes dos botões e centralizando-os
                 st.markdown("""
                     <style>
@@ -302,41 +302,29 @@ class main:
                             display: flex;
                             gap: 20px;
                             margin: auto;
+ 
                         }
                     </style>
                 """, unsafe_allow_html=True)
-
+ 
                 # Criando um container para os botões centralizados
                 st.markdown('<div class="custom-button-container">', unsafe_allow_html=True)
-                col_btn1, col_btn2, col_btn3 = st.columns(3)
-
+                col_btn1, col_btn2,col_btn3 = st.columns(3)
                 with col_btn1:
-                    if st.button('Baixar Consultas Não Autorizadas'):
-                        st.toast('Baixando Consultas Não Autorizadas...', icon="⏳")
-                        time.sleep(5)
-                        self.teste.processNotBillableQueries()
-                        
+                    st.button('Baixar Consultas Não Autorizadas')
                 with col_btn2:
-                    if st.button('Baixar Consultas Pendentes Atrasadas'):
-                        st.toast('Baixando Consultas Pendentes Atrasadas...', icon="⏳")
-                        time.sleep(5)
-                        self.teste.checkPendingAuthorizationForCurrentMonth()
+                    st.button('Baixar Consultas Pendentes Atrasadas')
                 with col_btn3:
-                    if st.button('Baixar Consultas Autorizadas'):
-                        st.toast('Baixando Consultas Autorizadas...', icon="⏳")
-                        time.sleep(5)
-                        self.teste.processBillableQueries()
-
+                    st.button('Baixar Consultas Autorizadas')
                 st.markdown('</div>', unsafe_allow_html=True)
-            
+           
             with col2:
                 st.subheader("📈 Aprovação de Consultas")
                 self.showApprovalChart(df)
                 self.showLastExecutionDate(df)
-        
+       
         except Exception as e:
             st.error(f"❌ Ocorreu um erro inesperado: {str(e)}")
-
 
 if __name__ == "__main__":
     app = main()
