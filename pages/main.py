@@ -311,18 +311,18 @@ class main:
                 col_btn1, col_btn2, col_btn3 = st.columns(3)
 
                 with col_btn1:
-                    if st.button('Baixar Consultas Não Autorizadas'):
+                    if st.download_button('Baixar Consultas Não Autorizadas'):
                         st.toast('Baixando Consultas Não Autorizadas...', icon="⏳")
                         time.sleep(5)
                         self.teste.processNotBillableQueries()
                         
                 with col_btn2:
-                    if st.button('Baixar Consultas Pendentes Atrasadas'):
+                    if st.download_button('Baixar Consultas Pendentes Atrasadas'):
                         st.toast('Baixando Consultas Pendentes Atrasadas...', icon="⏳")
                         time.sleep(5)
                         self.teste.checkPendingAuthorizationForCurrentMonth()
                 with col_btn3:
-                    if st.button('Baixar Consultas Autorizadas'):
+                    if st.download_button('Baixar Consultas Autorizadas'):
                         st.toast('Baixando Consultas Autorizadas...', icon="⏳")
                         time.sleep(5)
                         self.teste.processBillableQueries()
