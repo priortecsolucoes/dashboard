@@ -142,18 +142,20 @@ class DataExporter:
 
         print(f"🔍 Total de registros faturáveis AUTORIZADOS: {len(self.authorizedBillable)}")
         self.exportBillableToExcel()
+
+    
     def exportToExcel(self):
-        print("Dados encontrados em:", self.pendingAuthorizationInArrearsCurrentMonth)
         if not self.pendingAuthorizationInArrearsCurrentMonth:
             print("❌ Nenhum dado para exportar.")
             return
-        print("Dados encontrados antes de criar o dataFrame:", self.pendingAuthorizationInArrearsCurrentMonth)
         df = pd.DataFrame(self.pendingAuthorizationInArrearsCurrentMonth)
 
         if 'metas' in df.columns:
             df.drop(columns=['metas'], inplace=True)
 
-        fileName = f"Registros_Autorizacoes_Pendentes_Atrasadas_{datetime.now().strftime('%Y%m%d')}.xlsx"
+        downloadsFolder = os.path.join(os.environ['USERPROFILE'], 'Downloads')
+        fileName = os.path.join(downloadsFolder, f"Registros_Autorizacoes_Pendentes_Atrasadas_{datetime.now().strftime('%Y%m%d')}.xlsx")
+        
         df.to_excel(fileName, index=False)
         print(f"📂 Planilha gerada com sucesso: {fileName}")
 
@@ -166,7 +168,9 @@ class DataExporter:
         if 'metas' in df.columns:
             df.drop(columns=['metas'], inplace=True)
 
-        fileName = f"Registros_Nao_Faturaveis_{datetime.now().strftime('%Y%m%d')}.xlsx"
+        downloadsFolder = os.path.join(os.environ['USERPROFILE'], 'Downloads')
+        fileName = os.path.join(downloadsFolder, f"Registros_Nao_Faturaveis_{datetime.now().strftime('%Y%m%d')}.xlsx")
+        
         df.to_excel(fileName, index=False)
         print(f"📂 Planilha de registros NÃO faturáveis gerada com sucesso: {fileName}")
 
@@ -179,10 +183,12 @@ class DataExporter:
         if 'metas' in df.columns:
             df.drop(columns=['metas'], inplace=True)
 
-        fileName = f"Registros_Faturaveis_Autorizados_{datetime.now().strftime('%Y%m%d')}.xlsx"
+        downloadsFolder = os.path.join(os.environ['USERPROFILE'], 'Downloads')
+        fileName = os.path.join(downloadsFolder, f"Registros_Faturaveis_Autorizados_{datetime.now().strftime('%Y%m%d')}.xlsx")
+        
         df.to_excel(fileName, index=False)
-        print(f"📂 Planilha de registros faturáveis AUTORIZADOS gerada com sucesso: {fileName}")
-
+        print(f"📂 Planilha de registros faturáveis AUTORIZADOS gerada com sucesso: {fileName}")    
+        
     def run(self):
         self.loadData()
 
