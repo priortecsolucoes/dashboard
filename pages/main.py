@@ -314,7 +314,39 @@ class main:
 
                 # 📊 Exportação de Planilhas
                 st.subheader("📌 Exportar Planilhas")
-                col_exp1, col_exp2, col_exp3 = st.columns(3)
+                col_exp1, col_exp2, col_exp3, col_exp4, col_exp5 = st.columns(5)
+                    
+                st.markdown(
+                    """
+                    <style>
+                    div.stButton > button {
+                        width: 100% !important;  /* Garante que todos os botões tenham o mesmo tamanho */
+                        height: 70px !important;
+                        padding: 10px !important;
+                        font-size: 16px !important;
+                        font-weight: bold !important;
+                        border-radius: 8px !important;
+                        border: none !important;
+                        transition: 0.3s ease-in-out;
+                    }
+                    
+                    div.stButton > button:hover {
+                        background-color: #fff !important; /* Azul mais escuro no hover */
+                        color: #000 !important;
+                    }
+                    
+                    div.stDownloadButton > button {
+                        width: 100% !important; /* Mantém os botões de download alinhados */
+                        padding: 8px !important;
+                        font-size: 14px !important;
+                    }
+                    </style>
+                    """,
+                    unsafe_allow_html=True
+                )
+
+                # 🔹 Simulando colunas para exibição
+                col_exp1, col_exp2, col_exp3, col_exp4, col_exp5 = st.columns(5)
 
                 # 🚫 Consulta apenas ao clicar no botão
                 with col_exp1:
@@ -323,7 +355,7 @@ class main:
                         output, filename = exporter.processNotBillableQueries()
                         if output:
                             st.download_button(
-                                label="📥  Baixar Consultas Não Autorizadas",
+                                label="📥 Baixar Consultas Não Autorizadas",
                                 data=output,
                                 file_name=filename,
                                 mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
@@ -333,20 +365,21 @@ class main:
 
                 with col_exp2:
                     if st.button('Solicitar Consultas Pendentes Atrasadas'):
-                        st.toast('Gerando arquivo Pendentes Atrasadas...', icon="⏳")
+                        st.toast('Gerando arquivo...', icon="⏳")
                         output, filename = exporter.checkPendingAuthorizationForCurrentMonth()
                         if output:
                             st.download_button(
-                                label="📥 Baixar  Consultas Pendentes Atrasadas",
+                                label="📥 Baixar Consultas Pendentes Atrasadas",
                                 data=output,
                                 file_name=filename,
                                 mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
                             )
                         else:
                             st.warning("Nenhum dado encontrado para exportação.")
+
                 with col_exp3:
                     if st.button('Solicitar Consultas Autorizadas'):
-                        st.toast('Gerando arquivo Consultas Autorizadas...', icon="⏳")
+                        st.toast('Gerando arquivo...', icon="⏳")
                         output, filename = exporter.processBillableQueries()
                         if output:
                             st.download_button(
@@ -357,6 +390,35 @@ class main:
                             )
                         else:
                             st.warning("Nenhum dado encontrado para exportação.")
+
+                with col_exp4:
+                    if st.button('Solicitar Consultas Negadas'):  # 🔹 Removidos espaços extras
+                        st.toast('Gerando arquivo...', icon="⏳")
+                        output, filename = exporter.processDeniedQueries()
+                        if output:
+                            st.download_button(
+                                label="📥 Baixar Consultas Negadas",
+                                data=output,
+                                file_name=filename,
+                                mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                            )
+                        else:
+                            st.warning("Nenhum dado encontrado para exportação.")
+
+                with col_exp5:
+                    if st.button('Solicitar Consultas Inelegíveis'):  # 🔹 Corrigido erro de digitação
+                        st.toast('Gerando arquivo...', icon="⏳")
+                        output, filename = exporter.processIneligibleQueries()
+                        if output:
+                            st.download_button(
+                                label="📥 Baixar Consultas Inelegíveis",
+                                data=output,
+                                file_name=filename,
+                                mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                            )
+                        else:
+                            st.warning("Nenhum dado encontrado para exportação.")
+                
             with col2:
                 st.subheader("📈 Aprovação de Consultas")
                 self.showApprovalChart(df)
