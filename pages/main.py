@@ -277,7 +277,6 @@ class main:
     
     def main(self):
         st.subheader("📊 IMND - Portal do Cliente - Priortec")
-       
         try:
             with st.spinner('Carregando dados...'):
                 df = self.getAllDataFromDb()
@@ -309,20 +308,60 @@ class main:
  
                 # Criando um container para os botões centralizados
                 st.markdown('<div class="custom-button-container">', unsafe_allow_html=True)
-                col_btn1, col_btn2,col_btn3 = st.columns(3)
-                with col_btn1:
-                    st.button('Baixar Consultas Não Autorizadas')
-                with col_btn2:
-                    st.button('Baixar Consultas Pendentes Atrasadas')
-                with col_btn3:
-                    st.button('Baixar Consultas Autorizadas')
-                st.markdown('</div>', unsafe_allow_html=True)
-           
+                
+                # 📥 Instância do DataExporter
+                exporter = DataExporter()
+
+                # 📊 Exportação de Planilhas
+                st.subheader("📌 Exportar Planilhas")
+                col_exp1, col_exp2, col_exp3 = st.columns(3)
+
+                # 🚫 Consulta apenas ao clicar no botão
+                with col_exp1:
+                    if st.button('Solicitar Consultas Não Autorizadas'):
+                        st.toast('Gerando arquivo...', icon="⏳")
+                        output, filename = exporter.processNotBillableQueries()
+                        if output:
+                            st.download_button(
+                                label="📥  Baixar Consultas Não Autorizadas",
+                                data=output,
+                                file_name=filename,
+                                mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                            )
+                        else:
+                            st.warning("Nenhum dado encontrado para exportação.")
+
+                with col_exp2:
+                    if st.button('Solicitar Consultas Pendentes Atrasadas'):
+                        st.toast('Gerando arquivo...', icon="⏳")
+                        output, filename = exporter.checkPendingAuthorizationForCurrentMonth()
+                        if output:
+                            st.download_button(
+                                label="📥 Baixar  Consultas Pendentes Atrasadas",
+                                data=output,
+                                file_name=filename,
+                                mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                            )
+                            st.download_button.cli
+                        else:
+                            st.warning("Nenhum dado encontrado para exportação.")
+                with col_exp3:
+                    if st.button('Solicitar Consultas Autorizadas'):
+                        st.toast('Gerando arquivo...', icon="⏳")
+                        output, filename = exporter.processBillableQueries()
+                        if output:
+                            st.download_button(
+                                label="📥 Baixar Consultas Autorizadas",
+                                data=output,
+                                file_name=filename,
+                                mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                            )
+                        else:
+                            st.warning("Nenhum dado encontrado para exportação.")
             with col2:
                 st.subheader("📈 Aprovação de Consultas")
                 self.showApprovalChart(df)
                 self.showLastExecutionDate(df)
-       
         except Exception as e:
             st.error(f"❌ Ocorreu um erro inesperado: {str(e)}")
 
