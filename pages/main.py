@@ -333,7 +333,7 @@ class main:
 
                 with col_exp2:
                     if st.button('Solicitar Consultas Pendentes Atrasadas'):
-                        st.toast('Gerando arquivo...', icon="⏳")
+                        st.toast('Gerando arquivo Pendentes Atrasadas...', icon="⏳")
                         output, filename = exporter.checkPendingAuthorizationForCurrentMonth()
                         if output:
                             st.download_button(
@@ -347,7 +347,7 @@ class main:
                             st.warning("Nenhum dado encontrado para exportação.")
                 with col_exp3:
                     if st.button('Solicitar Consultas Autorizadas'):
-                        st.toast('Gerando arquivo...', icon="⏳")
+                        st.toast('Gerando arquivo Consultas Autorizadas...', icon="⏳")
                         output, filename = exporter.processBillableQueries()
                         if output:
                             st.download_button(
