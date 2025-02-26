@@ -342,7 +342,6 @@ class main:
                                 file_name=filename,
                                 mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
                             )
-                            st.download_button.cli
                         else:
                             st.warning("Nenhum dado encontrado para exportação.")
                 with col_exp3:
