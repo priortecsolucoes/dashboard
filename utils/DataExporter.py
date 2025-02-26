@@ -2,6 +2,7 @@ import time
 from datetime import datetime, date, timedelta
 import calendar
 import requests
+import io
 import pandas as pd
 from collections import Counter
 from dotenv import load_dotenv
@@ -58,11 +59,7 @@ class DataExporter:
                           f"status=scheduled,fulfilled,notaccomplished&limit=1000&"
                           f"date_start={dateStart}&date_end={dateEnd}")
                 print(f"🔄 Requisitando página {page}...")
-                try:
-                    requisicao = self.requestWithRetries(apiUrl)
-                except Exception as erro:
-                    print(f"❌ Erro na requisição: {erro}")
-                    break
+                requisicao = self.requestWithRetries(apiUrl)
                 if requisicao is None:
                     break
                 try:
@@ -73,14 +70,30 @@ class DataExporter:
                 except Exception as e:
                     print(f"❌ Erro ao processar JSON: {e}")
                     break
-            aprovados = []
-            for node in self.allNodes:
-                    tsStatus = node.get("metas", {}).get("ts_status", None)
-                    if tsStatus == "APROVADO":
-                        aprovados.append(node)
+                time.sleep(5)
             return self.allNodes
         except Exception as erro:
             print("Erro ao carregar dados", erro)
+
+    def exportToExcel(self, data, filename):
+        if not data:
+            import streamlit as st
+            st.warning("❌ Nenhum dado para exportar.")
+            return None, None
+
+        df = pd.DataFrame(data)
+
+        if 'metas' in df.columns:
+            df.drop(columns=['metas'], inplace=True)
+
+        # Cria um buffer em memória
+        output = io.BytesIO()
+        with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+            df.to_excel(writer, index=False, sheet_name='Dados')
+        output.seek(0)
+
+        return output, filename
+
     def checkPendingAuthorizationForCurrentMonth(self):
         nodes = self.loadData()
         today = date.today()
@@ -91,15 +104,17 @@ class DataExporter:
                 nodeDateTime = datetime.strptime(nodeDateTimeStr, "%d/%m/%Y").date()
                 nodeMotivation = (node.get("motivacao") or "").lower().strip()
                 nodeStatus = node.get("metas", {}).get("ts_status")
-                
+
                 if (limitDate <= nodeDateTime or nodeDateTime > today) and \
                    nodeMotivation in self.motivations and \
                    (nodeStatus is None or nodeStatus == ""):
-                    print(f"🟠 Consulta autorização pendente atrasada: {node['data']}")
                     self.pendingAuthorizationInArrearsCurrentMonth.append(node)
             except ValueError as erro:
                 print(f"❌ Erro ao converter data '{node.get('data', 'Desconhecida')}': {erro}")
-        self.exportToExcel()
+
+        filename = f"Registros_Autorizacoes_Pendentes_Atrasadas_{datetime.now().strftime('%Y%m%d')}.xlsx"
+        return self.exportToExcel(self.pendingAuthorizationInArrearsCurrentMonth, filename)
+
     def processNotBillableQueries(self):
         nodes = self.loadData()
         today = date.today()
@@ -114,78 +129,30 @@ class DataExporter:
                 nodeStatus = node.get("metas", {}).get("ts_status")
 
                 if startOfMonth <= nodeDateTime < limitDate and nodeMotivation in self.motivations and (nodeStatus is None or nodeStatus == ""):
-                    print(f"⚠️ Consulta faturável NÃO autorizada encontrada: {node['data']}")
                     self.billableNotAuthorized.append(node)
             except ValueError as erro:
                 print(f"❌ Erro ao converter data '{node.get('data', 'Desconhecida')}': {erro}")
 
-        print(f"🔍 Total de registros faturáveis NÃO autorizados: {len(self.billableNotAuthorized)}")
-        self.exportNotBillableToExcel()
-        
+        filename = f"Registros_Nao_Faturaveis_{datetime.now().strftime('%Y%m%d')}.xlsx"
+        return self.exportToExcel(self.billableNotAuthorized, filename)
+
     def processBillableQueries(self):
         nodes = self.loadData()
         today = date.today()
         limitDate = today - timedelta(days=3)
-        
+
         for node in nodes:
             try:
                 nodeDateTimeStr = node.get("data", "01/01/1970")
                 nodeDateTime = datetime.strptime(nodeDateTimeStr, "%d/%m/%Y").date()
                 nodeMotivation = (node.get("motivacao") or "").lower().strip()
                 nodeStatus = (node.get("metas", {}).get("ts_status") or "").lower().strip()
-                
+
                 if nodeDateTime <= limitDate and nodeMotivation in self.motivations and nodeStatus == "aprovado":
-                    print(f"✅ Consulta faturável AUTORIZADA encontrada: {node['data']}")
                     self.authorizedBillable.append(node)
             except ValueError as erro:
                 print(f"❌ Erro ao converter data '{node.get('data', 'Desconhecida')}': {erro}")
 
-        print(f"🔍 Total de registros faturáveis AUTORIZADOS: {len(self.authorizedBillable)}")
-        self.exportBillableToExcel()
+        filename = f"Registros_Faturaveis_Autorizados_{datetime.now().strftime('%Y%m%d')}.xlsx"
+        return self.exportToExcel(self.authorizedBillable, filename)
 
-    
-    def exportToExcel(self):
-        if not self.pendingAuthorizationInArrearsCurrentMonth:
-            print("❌ Nenhum dado para exportar.")
-            return
-        df = pd.DataFrame(self.pendingAuthorizationInArrearsCurrentMonth)
-
-        if 'metas' in df.columns:
-            df.drop(columns=['metas'], inplace=True)
-
-        fileName = f"Registros_Autorizacoes_Pendentes_Atrasadas_{datetime.now().strftime('%Y%m%d')}.xlsx"
-        df.to_excel(fileName, index=False)
-        print(f"📂 Planilha gerada com sucesso: {fileName}")
-
-    def exportNotBillableToExcel(self):
-        if not self.billableNotAuthorized:
-            print("❌ Nenhum dado faturável NÃO autorizado para exportar.")
-            return
-        df = pd.DataFrame(self.billableNotAuthorized)
-
-        if 'metas' in df.columns:
-            df.drop(columns=['metas'], inplace=True)
-
-        fileName = f"Registros_Nao_Faturaveis_{datetime.now().strftime('%Y%m%d')}.xlsx"
-        df.to_excel(fileName, index=False)
-        print(f"📂 Planilha de registros NÃO faturáveis gerada com sucesso: {fileName}")
-
-    def exportBillableToExcel(self):
-        if not self.authorizedBillable:
-            print("❌ Nenhum dado faturável autorizado para exportar.")
-            return
-        df = pd.DataFrame(self.authorizedBillable)
-
-        if 'metas' in df.columns:
-            df.drop(columns=['metas'], inplace=True)
-
-        fileName = f"Registros_Faturaveis_Autorizados_{datetime.now().strftime('%Y%m%d')}.xlsx"
-        df.to_excel(fileName, index=False)
-        print(f"📂 Planilha de registros faturáveis AUTORIZADOS gerada com sucesso: {fileName}")
-        
-    def run(self):
-        self.loadData()
-
-if __name__ == "__main__":
-    exporter = DataExporter()
-    exporter.run()
