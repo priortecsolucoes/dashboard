@@ -22,6 +22,8 @@ class DataExporter:
         self.pendingAuthorizationInArrearsCurrentMonth = []
         self.billableNotAuthorized = []
         self.authorizedBillable = []
+        self.deniedRecords = []
+        self.ineligibleRecords = []
         self.headers = {
             "Authorization": os.getenv("IMND_ACCESS_TOKEN"),
             "Content-Type": "application/json"
@@ -156,3 +158,37 @@ class DataExporter:
         filename = f"Registros_Faturaveis_Autorizados_{datetime.now().strftime('%Y%m%d')}.xlsx"
         return self.exportToExcel(self.authorizedBillable, filename)
 
+
+    def processDeniedQueries(self):
+        nodes = self.loadData()
+
+        for node in nodes:
+            try:
+                nodeDateTimeStr = node.get("data", "01/01/1970")
+                nodeDateTime = datetime.strptime(nodeDateTimeStr, "%d/%m/%Y").date()
+                nodeStatus = (node.get("metas", {}).get("ts_status") or "").lower().strip()
+
+                if nodeStatus == "negado":
+                    self.deniedRecords.append(node)
+            except ValueError as erro:
+                print(f"\u274C Erro ao converter data '{node.get('data', 'Desconhecida')}': {erro}")
+
+        filename = f"Registros_Negados_{datetime.now().strftime('%Y%m%d')}.xlsx"
+        return self.exportToExcel(self.deniedRecords, filename)
+
+    def processIneligibleQueries(self):
+        nodes = self.loadData()
+
+        for node in nodes:
+            try:
+                nodeDateTimeStr = node.get("data", "01/01/1970")
+                nodeDateTime = datetime.strptime(nodeDateTimeStr, "%d/%m/%Y").date()
+                nodeStatus = (node.get("metas", {}).get("ts_status") or "").lower().strip()
+
+                if nodeStatus == "inelegível":
+                    self.ineligibleRecords.append(node)
+            except ValueError as erro:
+                print(f"\u274C Erro ao converter data '{node.get('data', 'Desconhecida')}': {erro}")
+
+        filename = f"Registros_Inelegiveis_{datetime.now().strftime('%Y%m%d')}.xlsx"
+        return self.exportToExcel(self.ineligibleRecords, filename)
