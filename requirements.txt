@@ -10,4 +10,5 @@ configparser
 python-dotenv
 requests
 datetime
+openpyxl
 io
