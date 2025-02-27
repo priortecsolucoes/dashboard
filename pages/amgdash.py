@@ -37,17 +37,17 @@ else:
 class AmgDash:
     def __init__(self):
         load_dotenv()
-        self.dbHost = os.getenv("DBHOST")
-        self.dbName = os.getenv("DBNAME")
-        self.dbUser = os.getenv("DBUSER")
-        self.dbPassword = os.getenv("DBPASSWORD")
-        self.dbPort = os.getenv("DBPORT")
+        self.dbHost = os.getenv('DBHOST')
+        self.dbName = os.getenv('DBNAME')
+        self.dbUser =  os.getenv('DBUSER')
+        self.dbPassword = os.getenv('DBPASSWORD')
+        self.dbPort =  os.getenv('DBPORT')
         self.conn = psycopg2.connect(
-            host="roundhouse.proxy.rlwy.net",
-            database="railway",
-            user="postgres",
-            password="XWhTqAztzzYuAqvUcgWCUJUJmnEJliDK",
-            port="28938",
+            host=self.dbHost,
+            database=self.dbName,
+            user=self.dbUser,
+            password=self.dbPassword,
+            port=self.dbPort
         )
 
     def getAllDataFromDb(self):
