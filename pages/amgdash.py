@@ -17,7 +17,7 @@ if "admin" not in access:
         <style>
             section[data-testid="stSidebar"] {display: none;}
             .e14lo1l1  {display: none !important;}
-            div.block-container {padding-top: 15px !important;}
+            div.block-container {padding-top: 50px !important;}
         </style>
         """,
         unsafe_allow_html=True,
@@ -27,7 +27,7 @@ else:
         """
         <style>
             section[data-testid="stSidebar"] {display: block;}
-            div.block-container {padding-top: 15px !important;}
+            div.block-container {padding-top: 50px !important;}
         </style>
         """,
         unsafe_allow_html=True,
@@ -37,20 +37,6 @@ else:
 class AmgDash:
     def __init__(self):
         load_dotenv()
-        self.dbHostAmg = os.getenv("AMG_HOST_POSTGREE")
-        self.dbNameAmg = os.getenv("AMG_DATABASE_POSTGREE")
-        self.dbUserAmg = os.getenv("AMG_USER_POSTGREE")
-        self.dbPasswordAmg = os.getenv("AMG_PASSWORD_POSTGREE")
-        self.dbPortAmg = os.getenv("AMG_PORT_POSTGREE")
-        self.connAMG = psycopg2.connect(
-            host="26.173.234.118",
-            database="AMG_SAUDE",
-            user="postgres",
-            password="1425",
-            port="5432",
-        )
-        
-        
         self.dbHost = os.getenv('DBHOST')
         self.dbName = os.getenv('DBNAME')
         self.dbUser =  os.getenv('DBUSER')
@@ -67,27 +53,29 @@ class AmgDash:
     def getErrors(self):
         try:
             query = """
-                SELECT "ERROR", COUNT(*)
-                    FROM "OCCUPATIONAL_FILE"
-                    WHERE "STATUS" IN ('PE','AR','SM')
-                    GROUP BY "ERROR";
+                SELECT en.name AS "DESCRIÇÃO", tv.int_value AS "QUANTIDADE"
+                FROM tag t
+                JOIN errors_names en ON t.id = en.id_tag::INTEGER
+                JOIN tag_value tv ON t.id = tv.tag_id
+                WHERE t.id BETWEEN 29 AND 33;
             """
-            df = pd.read_sql_query(query, self.connAMG)
+            df = pd.read_sql_query(query, self.conn)
             if df.empty:
                 raise ValueError("A consulta não retornou dados.")
             return df
         except Exception as e:
             st.error(f"❌ Erro ao conectar ao banco de dados ou executar a consulta: {str(e)}")
             return pd.DataFrame()
-        
+
     def display_errors_table(self):
         df = self.getErrors()
         if df.empty:
-            st.info("✅ Nenhum erro encontrado.")
+            st.info("\u2705 Nenhum erro encontrado.")
         else:
             st.write("### Erros encontrados")
             st.dataframe(df.style.set_properties(**{'text-align': 'center'}))
-        
+
+
         
     def getAllDataFromDb(self):
         try:
@@ -167,9 +155,6 @@ class AmgDash:
                     ha='center', fontsize=4, fontweight='bold', color='black')
 
         st.pyplot(plt)
-
-
-
 
     def execute(self):
         st.subheader("📊 AMG - Portal do Cliente - Priortec")
