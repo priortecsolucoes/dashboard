@@ -43,11 +43,11 @@ class AmgDash:
         self.dbPasswordAmg = os.getenv("AMG_PASSWORD_POSTGREE")
         self.dbPortAmg = os.getenv("AMG_PORT_POSTGREE")
         self.connAMG = psycopg2.connect(
-            host=self.dbHostAmg ,
-            database=self.dbNameAmg,
-            user=self.dbUserAmg,
-            password=self.dbPasswordAmg,
-            port=self.dbPortAmg,
+            host="26.173.234.118",
+            database="AMG_SAUDE",
+            user="postgres",
+            password="1425",
+            port="5432",
         )
         
         
