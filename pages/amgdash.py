@@ -17,7 +17,7 @@ if "admin" not in access:
         <style>
             section[data-testid="stSidebar"] {display: none;}
             .e14lo1l1  {display: none !important;}
-            div.block-container {padding-top: 50px !important;}
+            div.block-container {padding-top: 15px !important;}
         </style>
         """,
         unsafe_allow_html=True,
@@ -27,7 +27,7 @@ else:
         """
         <style>
             section[data-testid="stSidebar"] {display: block;}
-            div.block-container {padding-top: 50px !important;}
+            div.block-container {padding-top: 15px !important;}
         </style>
         """,
         unsafe_allow_html=True,
@@ -37,6 +37,20 @@ else:
 class AmgDash:
     def __init__(self):
         load_dotenv()
+        self.dbHostAmg = os.getenv("AMG_HOST_POSTGREE")
+        self.dbNameAmg = os.getenv("AMG_DATABASE_POSTGREE")
+        self.dbUserAmg = os.getenv("AMG_USER_POSTGREE")
+        self.dbPasswordAmg = os.getenv("AMG_PASSWORD_POSTGREE")
+        self.dbPortAmg = os.getenv("AMG_PORT_POSTGREE")
+        self.connAMG = psycopg2.connect(
+            host=self.dbHostAmg ,
+            database=self.dbNameAmg,
+            user=self.dbUserAmg,
+            password=self.dbPasswordAmg,
+            port=self.dbPortAmg,
+        )
+        
+        
         self.dbHost = os.getenv('DBHOST')
         self.dbName = os.getenv('DBNAME')
         self.dbUser =  os.getenv('DBUSER')
@@ -50,6 +64,31 @@ class AmgDash:
             port=self.dbPort
         )
 
+    def getErrors(self):
+        try:
+            query = """
+                SELECT "ERROR", COUNT(*)
+                    FROM "OCCUPATIONAL_FILE"
+                    WHERE "STATUS" IN ('PE','AR','SM')
+                    GROUP BY "ERROR";
+            """
+            df = pd.read_sql_query(query, self.connAMG)
+            if df.empty:
+                raise ValueError("A consulta não retornou dados.")
+            return df
+        except Exception as e:
+            st.error(f"❌ Erro ao conectar ao banco de dados ou executar a consulta: {str(e)}")
+            return pd.DataFrame()
+        
+    def display_errors_table(self):
+        df = self.getErrors()
+        if df.empty:
+            st.info("✅ Nenhum erro encontrado.")
+        else:
+            st.write("### Erros encontrados")
+            st.dataframe(df.style.set_properties(**{'text-align': 'center'}))
+        
+        
     def getAllDataFromDb(self):
         try:
             query = """
@@ -72,6 +111,17 @@ class AmgDash:
         except Exception as e:
             st.error(f"❌ Erro ao conectar ao banco de dados ou executar a consulta: {str(e)}")
             return pd.DataFrame()
+        
+        
+    def showSatusTable(self,df):
+        st.subheader("📋 Tabela de Valores")
+        if df.empty:
+            st.info("✅ Nenhum status encontrado.")
+        else:
+            st.write("### Tabela de Status")
+            st.dataframe(df.style.set_properties(**{'text-align': 'center'}))
+        
+
 
     def plot_bar_chart(self, df):
         if df.empty:
@@ -93,52 +143,44 @@ class AmgDash:
         df["percentage"] = df[value_col] / total * 100 if total > 0 else 0
         df["display_text"] = df.apply(lambda row: f"{row[value_col]} ({row['percentage']:.1f}%)", axis=1)
 
-        # Layout do Streamlit com colunas
-        col1, col2 = st.columns([1, 1])  # Define duas colunas de tamanho igual
+        st.subheader("📊 Gráfico de Valores")
+        palette = ['#4CAF50', '#F44336', '#FF9800', '#9E9E9E', '#2196F3', '#4156F7']
+        max_value = df[value_col].max() if not df[value_col].empty else 1
 
-        # Exibir a tabela na primeira coluna
-        with col1:
-            st.subheader("📋 Tabela de Valores")
-            df_display = df[["name", value_col, "display_text"]].rename(columns={"name": "Categoria", value_col: "Valor", "display_text": "Qtd (%)"})
-            st.dataframe(df_display, hide_index=True)
+        plt.figure(figsize=(3, 2), facecolor='#0E1117')  # Reduzindo tamanho da figura
 
-        # Criar e exibir o gráfico na segunda coluna
-        with col2:
-            st.subheader("📊 Gráfico de Valores")
-            palette = ['#4CAF50', '#F44336', '#FF9800', '#9E9E9E', '#2196F3', '#4156F7']
-            plt.figure(figsize=(8, 6), facecolor='#0E1117')
-            
-            # Use 'name' (não renomeada) para o eixo X
-            ax = sns.barplot(x=df["name"], y=df[value_col], data=df,
-                            palette=palette,
-                            edgecolor='black', linewidth=1)
+        ax = sns.barplot(x=df["name"], y=df[value_col], data=df,
+                        palette=palette, edgecolor='black', linewidth=0.5)
 
-            # Definir limite superior para "achatar" o gráfico verticalmente
-            max_value = df[value_col].max()
-            ax.set_ylim(0, max_value * 1.2)  # Aumenta apenas 20% acima do maior valor
+        # Ajuste proporcional do tamanho das fontes
+        ax.set_xlabel("Categorias", fontsize=5, color='white')
+        ax.set_ylabel("Valores", fontsize=5, color='white')
+        ax.set_title("Distribuição das Tags", fontsize=6, color='white')
 
-            # Personalização do gráfico
-            ax.set_xlabel("Categorias", fontsize=10, color='white')
-            ax.set_ylabel("Valores", fontsize=10, color='white')
-            ax.set_title("Distribuição das Tags", fontsize=12, color='white')
-            ax.set_xticklabels(df["name"], rotation=45, color='white',fontsize=10,)
-            ax.yaxis.label.set_color('white')
-            ax.xaxis.label.set_color('white')
-            ax.tick_params(axis='y', colors='white')
-            ax.grid(axis="y", linestyle="--", alpha=0.7)
+        ax.set_xticklabels(df["name"], rotation=45, ha='right', rotation_mode="anchor",
+                        color='white', fontsize=4)  # Correção do alinhamento
+        ax.tick_params(axis='y', colors='white', labelsize=4)
 
-            # Adicionando os valores no topo das barras
-            for i, (name, value, percentage) in enumerate(zip(df["name"], df[value_col], df["percentage"])):
-                ax.text(i, value + (max_value * 0.05), f"{value} ({percentage:.1f}%)", ha='center', fontsize=10, fontweight='bold', color='black')
+        # Ajustando os valores no topo das barras
+        for i, (name, value, percentage) in enumerate(zip(df["name"], df[value_col], df["percentage"])):
+            ax.text(i, value + (max_value * 0.03), f"{value} ({percentage:.1f}%)",
+                    ha='center', fontsize=4, fontweight='bold', color='black')
 
-            st.pyplot(plt)
+        st.pyplot(plt)
+
+
 
 
     def execute(self):
         st.subheader("📊 AMG - Portal do Cliente - Priortec")
         df = self.getAllDataFromDb()
-        self.plot_bar_chart(df)
-
+        col1, col2 = st.columns([1,1])
+        with col1:
+            self.showSatusTable(df)
+            self.display_errors_table()
+        with col2:
+            self.plot_bar_chart(df)
+        
 
 if __name__ == "__main__":
     loop = AmgDash()
