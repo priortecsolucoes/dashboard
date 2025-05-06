@@ -13,3 +13,4 @@ datetime
 openpyxl
 xlsxwriter
 sqlalchemy
+postgresql
