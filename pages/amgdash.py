@@ -257,11 +257,11 @@ class AmgDash:
                     st.error(f"❌ Arquivo com ID {file_id} não encontrado")
 
     def get_tag_string_value(self):
-        dbHost = os.getenv('DBHOST_DASH')
-        dbName = os.getenv('DBNAME_DASH')
-        dbUser = os.getenv('DBUSER_DASH')
-        dbPassword = os.getenv('DBPASSWORD_DASH')
-        dbPort = os.getenv('DBPORT_DASH')
+        dbHost = os.getenv('PGHOST')
+        dbName = os.getenv('PGNAME')
+        dbUser = os.getenv('PGUSER')
+        dbPassword = os.getenv('PGPASSWORD')
+        dbPort = os.getenv('PGPORT')
 
         try:
             db_url = f"postgresql+psycopg2://{dbUser}:{dbPassword}@{dbHost}:{dbPort}/{dbName}"
@@ -315,11 +315,11 @@ class AmgDash:
     def get_aso_reading_status(self):
         try:
             # Configurar conexão com o banco de dados do dashboard (onde está a tabela tag_value)
-            dbHost = os.getenv('DBHOST_DASH')
-            dbName = os.getenv('DBNAME_DASH')
-            dbUser = os.getenv('DBUSER_DASH')
-            dbPassword = os.getenv('DBPASSWORD_DASH')
-            dbPort = os.getenv('DBPORT_DASH')
+            dbHost = os.getenv('PGHOST')
+            dbName = os.getenv('PGNAME')
+            dbUser = os.getenv('PGUSER')
+            dbPassword = os.getenv('PGPASSWORD')
+            dbPort = os.getenv('PGPORT')
             
             # Criar conexão com o banco do dashboard
             db_url = f"postgresql+psycopg2://{dbUser}:{dbPassword}@{dbHost}:{dbPort}/{dbName}"
