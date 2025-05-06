@@ -53,12 +53,17 @@ class AmgDash:
         )
 
     def getErrors(self):
+        dbHost = os.getenv('DBHOST')
+        dbName = os.getenv('DBNAME')
+        dbUser = os.getenv('DBUSER')
+        dbPassword = os.getenv('DBPASSWORD')
+        dbPort = os.getenv('DBPORT')
         conn = psycopg2.connect(
-            host=self.dbHost,
-            database=self.dbName,
-            user=self.dbUser,
-            password=self.dbPassword,
-            port=self.dbPort
+            host=dbHost,
+            database=dbName,
+            user=dbUser,
+            password=dbPassword,
+            port=dbPort
         )
 
         try:
