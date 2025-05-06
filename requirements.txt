@@ -12,3 +12,4 @@ requests
 datetime
 openpyxl
 xlsxwriter
+sqlalchemy
