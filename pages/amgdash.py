@@ -53,6 +53,14 @@ class AmgDash:
         )
 
     def getErrors(self):
+        conn = psycopg2.connect(
+            host=self.dbHost,
+            database=self.dbName,
+            user=self.dbUser,
+            password=self.dbPassword,
+            port=self.dbPort
+        )
+
         try:
             # Nova consulta para obter os erros
             query = """
@@ -62,7 +70,7 @@ class AmgDash:
                 GROUP BY "ERROR"
                 ORDER BY total DESC;
             """
-            df = pd.read_sql_query(query, self.conn)
+            df = pd.read_sql_query(query, conn)
             if df.empty:
                 raise ValueError("A consulta não retornou dados.")
                 
