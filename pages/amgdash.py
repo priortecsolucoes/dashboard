@@ -39,11 +39,11 @@ else:
 class AmgDash:
     def __init__(self):
         load_dotenv()
-        self.dbHost = os.getenv('PGHOST')
-        self.dbName = os.getenv('PGDATABASE')
-        self.dbUser = os.getenv('PGUSER')
-        self.dbPassword = os.getenv('PGPASSWORD')
-        self.dbPort = os.getenv('PGPORT')
+        self.dbHost = os.getenv('AMG_HOST_POSTGREE')
+        self.dbName = os.getenv('AMG_DATABASE_POSTGREE')
+        self.dbUser = os.getenv('AMG_USER_POSTGREE')
+        self.dbPassword = os.getenv('AMG_PASSWORD_POSTGREE')
+        self.dbPort = os.getenv('AMG_PORT_POSTGREE')
         self.conn = psycopg2.connect(
             host=self.dbHost,
             database=self.dbName,
