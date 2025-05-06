@@ -39,11 +39,11 @@ else:
 class AmgDash:
     def __init__(self):
         load_dotenv()
-        self.dbHost = os.getenv('DBHOST')
-        self.dbName = os.getenv('DBNAME')
-        self.dbUser = os.getenv('DBUSER')
-        self.dbPassword = os.getenv('DBPASSWORD')
-        self.dbPort = os.getenv('DBPORT')
+        self.dbHost = os.getenv('PGHOST')
+        self.dbName = os.getenv('PGDATABASE')
+        self.dbUser = os.getenv('PGUSER')
+        self.dbPassword = os.getenv('PGPASSWORD')
+        self.dbPort = os.getenv('PGPORT')
         self.conn = psycopg2.connect(
             host=self.dbHost,
             database=self.dbName,
@@ -53,19 +53,6 @@ class AmgDash:
         )
 
     def getErrors(self):
-        dbHost = os.getenv('DBHOST')
-        dbName = os.getenv('DBNAME')
-        dbUser = os.getenv('DBUSER')
-        dbPassword = os.getenv('DBPASSWORD')
-        dbPort = os.getenv('DBPORT')
-        conn = psycopg2.connect(
-            host=dbHost,
-            database=dbName,
-            user=dbUser,
-            password=dbPassword,
-            port=dbPort
-        )
-
         try:
             # Nova consulta para obter os erros
             query = """
@@ -75,7 +62,7 @@ class AmgDash:
                 GROUP BY "ERROR"
                 ORDER BY total DESC;
             """
-            df = pd.read_sql_query(query, conn)
+            df = pd.read_sql_query(query, self.conn)
             if df.empty:
                 raise ValueError("A consulta não retornou dados.")
                 
