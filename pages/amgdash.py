@@ -305,7 +305,7 @@ class AmgDash:
             diferenca_segundos = (hora_atual - data_hora).total_seconds()
             
             # Determinar o status
-            if diferenca_segundos < 1800:  # 30 minutos = 1800 segundos
+            if diferenca_segundos < 14400:  # 30 minutos = 1800 segundos
                 status = '🟢 ATIVO'
             else:
                 status = '🔴 INATIVO'
