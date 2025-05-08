@@ -313,10 +313,10 @@ class AmgDash:
                 st.text(f"DEBUG - Hora atual (Brasília): {hora_atual}")
                 st.text(f"DEBUG - Data/hora do registro (Brasília): {data_hora}")
                 st.text(f"DEBUG - Diferença em segundos: {diferenca_segundos}")
-                st.text(f"DEBUG - Limite em segundos: 1800")
+                st.text(f"DEBUG - Limite em segundos: 14400")
                 
                 # Determinar o status
-                if diferenca_segundos < 1800:  # 30 minutos = 1800 segundos
+                if diferenca_segundos < 14400:  # 30 minutos = 1800 segundos
                     status = '🟢 ATIVO'
                 else:
                     status = '🔴 INATIVO'
