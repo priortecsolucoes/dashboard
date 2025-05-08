@@ -244,6 +244,7 @@ class AmgDash:
         # Retornando a figura para controlar onde será exibida
         return fig
     
+    '''
     def file_search_form(self):
         st.subheader("🔍 Buscar Arquivo")
         with st.form("file_search_form"):
@@ -257,6 +258,7 @@ class AmgDash:
                     st.dataframe(file_data, use_container_width=True)
                 else:
                     st.error(f"❌ Arquivo com ID {file_id} não encontrado")
+    '''
 
     def get_tag_string_value(self):
         dbHost = os.getenv('DBHOST')
@@ -271,23 +273,54 @@ class AmgDash:
         except Exception as e:
             st.error(f"Erro na conexão com o banco: {e}")
             self.engine = None
-      
+
         query = """
         SELECT "string_value", "registration_date" FROM "tag_value"
-        WHERE "tag_id" = 34;
+        WHERE "tag_id" = 34
+        ORDER BY "registration_date" DESC
+        LIMIT 1;
         """
+        
         try:
             df = pd.read_sql_query(query, self.engine)
-            # Adicionando uma coluna de status baseada na data
-            current_time = datetime.now()
-            df['status'] = pd.to_datetime(df['registration_date']).apply(
-                lambda x: '🟢 ATIVO' if (current_time - x).total_seconds() < 3600 else '🔴 INATIVO'
-            )
-            # Selecionando apenas as colunas relevantes
-            return df[['status', 'string_value']]
+            
+            if df.empty:
+                return pd.DataFrame({'status': ['🔴 INATIVO'], 'string_value': ['Sem dados']})
+            
+            # Obter o valor atual de string_value (que contém a data/hora)
+            data_hora_str = df['string_value'].iloc[0]
+            
+            # Converter explicitamente usando o formato correto (DD/MM/YYYY HH:MM:SS)
+            try:
+                data_hora = datetime.strptime(data_hora_str, '%d/%m/%Y %H:%M:%S')
+            except ValueError:
+                # Adicionar log temporário para depuração
+                st.error(f"Formato de data inválido: '{data_hora_str}'")
+                return pd.DataFrame({'status': ['🔴 INATIVO'], 'string_value': [data_hora_str]})
+            
+            # Obter a hora atual
+            hora_atual = datetime.now()
+            
+            # Calcular a diferença em segundos
+            diferenca_segundos = (hora_atual - data_hora).total_seconds()
+            
+            # Determinar o status
+            if diferenca_segundos < 14400:  # 30 minutos = 1800 segundos
+                status = '🟢 ATIVO'
+            else:
+                status = '🔴 INATIVO'
+            
+            # Criar DataFrame com resultado
+            result_df = pd.DataFrame({
+                'status': [status],
+                'string_value': [data_hora_str]
+            })
+            
+            return result_df
+            
         except Exception as e:
             st.error(f"Erro ao buscar dados do banco: {e}")
-            return pd.DataFrame()
+            return pd.DataFrame({'status': ['🔴 INATIVO'], 'string_value': [f'Erro: {str(e)}']})
     
     # Aqui está a nova função separada para visualização do Status APISOC
     def display_api_status(self):
@@ -442,9 +475,9 @@ class AmgDash:
             if fig:
                 st.pyplot(fig)
         
-        # Seção 6: Formulário de busca de arquivo
-        st.divider()
-        self.file_search_form()
+        # # Seção 6: Formulário de busca de arquivo
+        # st.divider()
+        # self.file_search_form()
 
 if __name__ == "__main__":
     loop = AmgDash()
