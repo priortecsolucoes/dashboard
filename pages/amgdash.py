@@ -283,59 +283,59 @@ class AmgDash:
         """
         
         try:
-        df = pd.read_sql_query(query, self.engine)
-        
-        if df.empty:
-            return pd.DataFrame({'status': ['🔴 INATIVO'], 'string_value': ['Sem dados']})
-        
-        # Obter o valor atual de string_value (que contém a data/hora)
-        data_hora_str = df['string_value'].iloc[0]
-        
-        # Converter para datetime com formato brasileiro
-        try:
-            data_hora = datetime.strptime(data_hora_str, '%d/%m/%Y %H:%M:%S')
+            df = pd.read_sql_query(query, self.engine)
             
-            # Se a data no banco não tem timezone, presumimos que está em horário local
-            # Definir explicitamente como horário de Brasília
-            timezone_brasil = pytz.timezone('America/Sao_Paulo')
-            data_hora = timezone_brasil.localize(data_hora)
+            if df.empty:
+                return pd.DataFrame({'status': ['🔴 INATIVO'], 'string_value': ['Sem dados']})
             
-            # Obter a hora atual em UTC
-            hora_atual_utc = datetime.now(timezone.utc)
+            # Obter o valor atual de string_value (que contém a data/hora)
+            data_hora_str = df['string_value'].iloc[0]
             
-            # Converter para o horário de Brasília
-            hora_atual = hora_atual_utc.astimezone(timezone_brasil)
-            
-            # Calcular a diferença em segundos
-            diferenca_segundos = (hora_atual - data_hora).total_seconds()
-            
-            # Remova os logs de depuração quando estiver funcionando
-            st.text(f"DEBUG - Hora atual (Brasília): {hora_atual}")
-            st.text(f"DEBUG - Data/hora do registro (Brasília): {data_hora}")
-            st.text(f"DEBUG - Diferença em segundos: {diferenca_segundos}")
-            st.text(f"DEBUG - Limite em segundos: 1800")
-            
-            # Determinar o status
-            if diferenca_segundos < 1800:  # 30 minutos = 1800 segundos
-                status = '🟢 ATIVO'
-            else:
-                status = '🔴 INATIVO'
-            
-            # Criar DataFrame com resultado
-            result_df = pd.DataFrame({
-                'status': [status],
-                'string_value': [data_hora_str]
-            })
-            
-            return result_df
-            
-        except ValueError:
-            st.error(f"Formato de data inválido: '{data_hora_str}'")
-            return pd.DataFrame({'status': ['🔴 INATIVO'], 'string_value': [data_hora_str]})
-            
-    except Exception as e:
-        st.error(f"Erro ao buscar dados do banco: {e}")
-        return pd.DataFrame({'status': ['🔴 INATIVO'], 'string_value': [f'Erro: {str(e)}']})
+            # Converter para datetime com formato brasileiro
+            try:
+                data_hora = datetime.strptime(data_hora_str, '%d/%m/%Y %H:%M:%S')
+                
+                # Se a data no banco não tem timezone, presumimos que está em horário local
+                # Definir explicitamente como horário de Brasília
+                timezone_brasil = pytz.timezone('America/Sao_Paulo')
+                data_hora = timezone_brasil.localize(data_hora)
+                
+                # Obter a hora atual em UTC
+                hora_atual_utc = datetime.now(timezone.utc)
+                
+                # Converter para o horário de Brasília
+                hora_atual = hora_atual_utc.astimezone(timezone_brasil)
+                
+                # Calcular a diferença em segundos
+                diferenca_segundos = (hora_atual - data_hora).total_seconds()
+                
+                # Remova os logs de depuração quando estiver funcionando
+                st.text(f"DEBUG - Hora atual (Brasília): {hora_atual}")
+                st.text(f"DEBUG - Data/hora do registro (Brasília): {data_hora}")
+                st.text(f"DEBUG - Diferença em segundos: {diferenca_segundos}")
+                st.text(f"DEBUG - Limite em segundos: 1800")
+                
+                # Determinar o status
+                if diferenca_segundos < 1800:  # 30 minutos = 1800 segundos
+                    status = '🟢 ATIVO'
+                else:
+                    status = '🔴 INATIVO'
+                
+                # Criar DataFrame com resultado
+                result_df = pd.DataFrame({
+                    'status': [status],
+                    'string_value': [data_hora_str]
+                })
+                
+                return result_df
+                
+            except ValueError:
+                st.error(f"Formato de data inválido: '{data_hora_str}'")
+                return pd.DataFrame({'status': ['🔴 INATIVO'], 'string_value': [data_hora_str]})
+                
+        except Exception as e:
+            st.error(f"Erro ao buscar dados do banco: {e}")
+            return pd.DataFrame({'status': ['🔴 INATIVO'], 'string_value': [f'Erro: {str(e)}']})
     
     # Aqui está a nova função separada para visualização do Status APISOC
     def display_api_status(self):
