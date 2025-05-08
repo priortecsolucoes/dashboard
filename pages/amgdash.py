@@ -303,6 +303,12 @@ class AmgDash:
             
             # Calcular a diferença em segundos
             diferenca_segundos = (hora_atual - data_hora).total_seconds()
+
+            # Adicionar informações de diagnóstico (temporário, remova depois)
+            st.text(f"DEBUG - Hora atual: {hora_atual}")
+            st.text(f"DEBUG - Data/hora do registro: {data_hora}")
+            st.text(f"DEBUG - Diferença em segundos: {diferenca_segundos}")
+            st.text(f"DEBUG - Limite em segundos: 14400")
             
             # Determinar o status
             if diferenca_segundos < 14400:  # 30 minutos = 1800 segundos
