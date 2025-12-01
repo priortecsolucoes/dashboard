@@ -203,7 +203,7 @@ class main:
                     text-align: center;
                     font-size: 20px;
                     width: 100px;
-                    padding: 10px;
+                    padding: 15px;
                     margin: 10px auto;
                     margin-left: 0px;
                 }
