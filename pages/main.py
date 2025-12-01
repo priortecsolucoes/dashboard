@@ -258,6 +258,46 @@ class main:
         """, unsafe_allow_html=True)
 
     def showIntegratorPendingTable(self, df):
+        st.markdown("""
+            <style>
+                .table-box {
+                    border: 2px solid #ccc;
+                    border-radius: 10px;
+                    text-align: center;
+                    font-size: 25px;
+                    width: 420px; 
+                    padding: 10px;
+                    height: 200px;
+                    margin: 10px auto;
+                    margin-left: 0px;
+                }
+
+                .table-box table {
+                    width: 100%;
+                    border-collapse: collapse;
+                }
+
+                .table-box th, .table-box td {
+                    border: 1px solid #ccc;
+                    padding: 8px;
+                }
+
+                .table-box th {
+                    background-color: #585858;
+                }
+
+                .table-box h2 {
+                    font-size: 20px;
+                }
+
+                .pending-value {
+                    font-size: 55px;
+                    font-weight: bold;
+                    margin-top: 10px;
+                }
+            </style>
+        """, unsafe_allow_html=True)
+        
         try:
             query = """
                 SELECT count(*) AS total_pendentes
