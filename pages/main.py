@@ -110,7 +110,7 @@ class main:
         
         if authMinutes < 10:
             return '🟢 AUTORIZANDO'
-        elif heartbeatMinutes < 10 and auth_minutes >= 10:
+        elif heartbeatMinutes < 10 and authMinutes >= 10:
             return '🟡 ATIVO'
         else:
             return '🔴 INATIVO'
@@ -147,7 +147,7 @@ class main:
         statusDf['heartbeat_datetime_value'] = pd.to_datetime(statusDf['HEARTBEAT'], format='%d/%m/%Y %H:%M:%S')
 
         currentTime = datetime.now(timezone('America/Sao_Paulo')).replace(tzinfo=None)
-        statusDf['STATUS'] = statusDf.apply(determineStatus, axis=1, currentTime=currentTime)
+        statusDf['STATUS'] = statusDf.apply(self.determineStatus, axis=1, currentTime=currentTime)
         
         statusDf = statusDf[['COMPUTADOR', 'STATUS', 'ÚLTIMA AUTORIZAÇÃO']]
         st.dataframe(statusDf, use_container_width=True)
