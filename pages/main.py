@@ -209,8 +209,6 @@ class main:
 
 
     def showPendingTable(self, df):
-        pending_value = df.loc[df["name"] == "IMND_AUTORIZACAO_PENDENTES_ATRASADOS_MES_ATUAL", "int_value"].values[0]
-
         st.markdown("""
             <style>
                 .table-box {
@@ -251,6 +249,7 @@ class main:
             </style>
         """, unsafe_allow_html=True)
 
+        pending_value = df.loc[df["name"] == "IMND_AUTORIZACAO_PENDENTES_ATRASADOS_MES_ATUAL", "int_value"].values[0]
         st.markdown(f"""
             <div class="table-box">
                 <h2>Consultas Pendentes Atrasadas</h2>
@@ -258,6 +257,38 @@ class main:
             </div>
         """, unsafe_allow_html=True)
 
+        integrator_pending_value = df.loc[df["name"] == "IMND_AUTORIZACAO_PENDENTES_ATRASADOS_MES_ATUAL", "int_value"].values[0]
+        st.markdown(f"""
+            <div class="table-box">
+                <h2>Consultas a Integrar IMND</h2>
+                <div class="pending-value"><strong>{integrator_pending_value}</strong></div>
+            </div>
+        """, unsafe_allow_html=True)
+
+    def showIntegratorPendingTable(self, df):
+        try:
+            query = """
+                SELECT count(*) AS total_pendentes
+                FROM imnd_authorization
+                WHERE tag.name IN (
+                   imnd_write_status != 'SUCESSO'
+                )
+            """
+            df = pd.read_sql_query(query, self.conn)
+            if df.empty or 'total_pendentes' not in df.columns:
+                raise ValueError("A consulta não retornou dados válidos.")
+
+            integrator_pending_value = int(df.loc[0, 'total_pendentes'])
+            
+            st.markdown(f"""
+                <div class="table-box">
+                    <h2>Consultas a Integrar IMND</h2>
+                    <div class="pending-value"><strong>{integrator_pending_value}</strong></div>
+                </div>
+            """, unsafe_allow_html=True)
+        except Exception as e:
+            st.error(f"❌ Erro ao conectar ao banco de dados ou executar a consulta: {str(e)}")
+            return pd.DataFrame()
     
     def showLastExecutionDate(self, df):
         last_execution_date = df.loc[df["name"] == "IMND_DATA_DA_ULTIMA_EXECUCAO", "string_value"].values[0]
@@ -296,11 +327,13 @@ class main:
             with col1:
                 st.subheader("📌 Status dos Computadores")
                 self.showStatusTable(df)
-                inner_col1, inner_col2 = st.columns(2)
+                inner_col1, inner_col2, inner_col3 = st.columns(3)
                 with inner_col1:
                     self.showBillingTable(df)
                 with inner_col2:
                     self.showPendingTable(df)
+                with inner_col3:
+                    self.showIntegratorPendingTable(df)
  
                 # Adicionando espaço antes dos botões e centralizando-os
                 st.markdown("""
