@@ -201,7 +201,7 @@ class main:
                     border: 2px solid #ccc;
                     border-radius: 10px;
                     text-align: center;
-                    font-size: 10px;
+                    font-size: 20px;
                     width: 100px;
                     padding: 10px;
                     margin: 10px auto;
@@ -210,20 +210,20 @@ class main:
                 .table-box table {
                     width: 100px;
                     border-collapse: collapse;
-                    font-size: 10px;
+                    font-size: 20px;
                 }
                 .table-box th, .table-box td {
                     border: 1px solid #ccc;
                     padding: 8px;
-                    font-size: 10px;
+                    font-size: 18px;
                 }
                 .table-box th {
                     background-color: #585858;
-                    font-size: 10px;
+                    font-size: 20px;
                 }
                 .bold-value {
                     font-weight: bold;
-                    font-size: 10px;
+                    font-size: 18px;
                 }
             </style>
         """, unsafe_allow_html=True)
