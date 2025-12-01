@@ -257,14 +257,6 @@ class main:
             </div>
         """, unsafe_allow_html=True)
 
-        integrator_pending_value = df.loc[df["name"] == "IMND_AUTORIZACAO_PENDENTES_ATRASADOS_MES_ATUAL", "int_value"].values[0]
-        st.markdown(f"""
-            <div class="table-box">
-                <h2>Consultas a Integrar IMND</h2>
-                <div class="pending-value"><strong>{integrator_pending_value}</strong></div>
-            </div>
-        """, unsafe_allow_html=True)
-
     def showIntegratorPendingTable(self, df):
         try:
             query = """
