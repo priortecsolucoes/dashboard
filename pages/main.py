@@ -77,6 +77,10 @@ class main:
                     'IMND_ROBO06_AUTORIZACAO_ULTIMO_REGISTRO',
                     'IMND_ROBO07_AUTORIZACAO_ULTIMO_REGISTRO',
                     'IMND_ROBO08_AUTORIZACAO_ULTIMO_REGISTRO',
+                    'IMND_ROBO16_AUTORIZACAO_ULTIMO_REGISTRO',
+                    'IMND_ROBO17_AUTORIZACAO_ULTIMO_REGISTRO',
+                    'IMND_ROBO18_AUTORIZACAO_ULTIMO_REGISTRO',
+                    'IMND_ROBO19_AUTORIZACAO_ULTIMO_REGISTRO',
                     'IMND_MES_ATUAL_FATURAVEIS_AUTORIZADAS',
                     'IMND_MES_ATUAL_FATURAVEIS_NAO_AUTORIZADAS',
                     'IMND_AUTORIZACAO_PENDENTES_ATRASADOS_MES_ATUAL',
@@ -100,6 +104,10 @@ class main:
                  df.loc[df["name"] == "IMND_ROBO06_AUTORIZACAO_ULTIMO_REGISTRO", "string_value"].values[0],
                  df.loc[df["name"] == "IMND_ROBO07_AUTORIZACAO_ULTIMO_REGISTRO", "string_value"].values[0],
                  df.loc[df["name"] == "IMND_ROBO08_AUTORIZACAO_ULTIMO_REGISTRO", "string_value"].values[0],
+                 df.loc[df["name"] == "IMND_ROBO16_AUTORIZACAO_ULTIMO_REGISTRO", "string_value"].values[0],
+                 df.loc[df["name"] == "IMND_ROBO17_AUTORIZACAO_ULTIMO_REGISTRO", "string_value"].values[0],
+                 df.loc[df["name"] == "IMND_ROBO18_AUTORIZACAO_ULTIMO_REGISTRO", "string_value"].values[0],
+                 df.loc[df["name"] == "IMND_ROBO19_AUTORIZACAO_ULTIMO_REGISTRO", "string_value"].values[0],
              ],
          }
          statusDf = pd.DataFrame(data)
