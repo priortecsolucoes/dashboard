@@ -81,6 +81,15 @@ class main:
                     'IMND_ROBO17_AUTORIZACAO_ULTIMO_REGISTRO',
                     'IMND_ROBO18_AUTORIZACAO_ULTIMO_REGISTRO',
                     'IMND_ROBO19_AUTORIZACAO_ULTIMO_REGISTRO',
+                    'IMND_ROBO03_HEARTBEAT',
+                    'IMND_ROBO05_HEARTBEAT',
+                    'IMND_ROBO06_HEARTBEAT',
+                    'IMND_ROBO07_HEARTBEAT',
+                    'IMND_ROBO08_HEARTBEAT',
+                    'IMND_ROBO16_HEARTBEAT',
+                    'IMND_ROBO17_HEARTBEAT',
+                    'IMND_ROBO18_HEARTBEAT',
+                    'IMND_ROBO19_HEARTBEAT',
                     'IMND_MES_ATUAL_FATURAVEIS_AUTORIZADAS',
                     'IMND_MES_ATUAL_FATURAVEIS_NAO_AUTORIZADAS',
                     'IMND_AUTORIZACAO_PENDENTES_ATRASADOS_MES_ATUAL',
@@ -94,30 +103,54 @@ class main:
         except Exception as e:
             st.error(f"❌ Erro ao conectar ao banco de dados ou executar a consulta: {str(e)}")
             return pd.DataFrame()
+
+    def determineStatus(row, currentTime):
+        authMinutes = (currentTime - row['authorization_datetime_value']).total_seconds() / 60
+        heartbeatMinutes = (currentTime - row['heartbeat_datetime_value']).total_seconds() / 60
+        
+        if authMinutes < 10:
+            return '🟢 AUTORIZANDO'
+        elif heartbeatMinutes < 10 and auth_minutes >= 10:
+            return '🟡 ATIVO'
+        else:
+            return '🔴 INATIVO'
     
     def showStatusTable(self, df):
-         data = {
-             "COMPUTADOR": ["IMND_ROBO3", "IMND_ROBO5", "IMND_ROBO6", "IMND_ROBO7", "IMND_ROBO8", "IMND_ROBO16", "IMND_ROBO17", "IMND_ROBO18", "IMND_ROBO19"],
-             "ÚLTIMA AUTORIZAÇÃO": [
-                 df.loc[df["name"] == "IMND_ROBO03_AUTORIZACAO_ULTIMO_REGISTRO", "string_value"].values[0],
-                 df.loc[df["name"] == "IMND_ROBO05_AUTORIZACAO_ULTIMO_REGISTRO", "string_value"].values[0],
-                 df.loc[df["name"] == "IMND_ROBO06_AUTORIZACAO_ULTIMO_REGISTRO", "string_value"].values[0],
-                 df.loc[df["name"] == "IMND_ROBO07_AUTORIZACAO_ULTIMO_REGISTRO", "string_value"].values[0],
-                 df.loc[df["name"] == "IMND_ROBO08_AUTORIZACAO_ULTIMO_REGISTRO", "string_value"].values[0],
-                 df.loc[df["name"] == "IMND_ROBO16_AUTORIZACAO_ULTIMO_REGISTRO", "string_value"].values[0],
-                 df.loc[df["name"] == "IMND_ROBO17_AUTORIZACAO_ULTIMO_REGISTRO", "string_value"].values[0],
-                 df.loc[df["name"] == "IMND_ROBO18_AUTORIZACAO_ULTIMO_REGISTRO", "string_value"].values[0],
-                 df.loc[df["name"] == "IMND_ROBO19_AUTORIZACAO_ULTIMO_REGISTRO", "string_value"].values[0],
-             ],
-         }
-         statusDf = pd.DataFrame(data)
-         currentTime = datetime.now(timezone('America/Sao_Paulo')).replace(tzinfo=None)
-         statusDf['datetime_value'] = pd.to_datetime(statusDf['ÚLTIMA AUTORIZAÇÃO'], format='%d/%m/%Y %H:%M:%S')
-         statusDf['STATUS'] = statusDf['datetime_value'].apply(
-             lambda x: '🟢 ATIVO' if currentTime - x <= timedelta(hours=1) else '🔴 INATIVO'
-         )
-         statusDf = statusDf[['COMPUTADOR', 'STATUS', 'ÚLTIMA AUTORIZAÇÃO']]
-         st.dataframe(statusDf, use_container_width=True)
+        data = {
+            "COMPUTADOR": ["IMND_ROBO3", "IMND_ROBO5", "IMND_ROBO6", "IMND_ROBO7", "IMND_ROBO8", "IMND_ROBO16", "IMND_ROBO17", "IMND_ROBO18", "IMND_ROBO19"],
+            "ÚLTIMA AUTORIZAÇÃO": [
+                df.loc[df["name"] == "IMND_ROBO03_AUTORIZACAO_ULTIMO_REGISTRO", "string_value"].values[0],
+                df.loc[df["name"] == "IMND_ROBO05_AUTORIZACAO_ULTIMO_REGISTRO", "string_value"].values[0],
+                df.loc[df["name"] == "IMND_ROBO06_AUTORIZACAO_ULTIMO_REGISTRO", "string_value"].values[0],
+                df.loc[df["name"] == "IMND_ROBO07_AUTORIZACAO_ULTIMO_REGISTRO", "string_value"].values[0],
+                df.loc[df["name"] == "IMND_ROBO08_AUTORIZACAO_ULTIMO_REGISTRO", "string_value"].values[0],
+                df.loc[df["name"] == "IMND_ROBO16_AUTORIZACAO_ULTIMO_REGISTRO", "string_value"].values[0],
+                df.loc[df["name"] == "IMND_ROBO17_AUTORIZACAO_ULTIMO_REGISTRO", "string_value"].values[0],
+                df.loc[df["name"] == "IMND_ROBO18_AUTORIZACAO_ULTIMO_REGISTRO", "string_value"].values[0],
+                df.loc[df["name"] == "IMND_ROBO19_AUTORIZACAO_ULTIMO_REGISTRO", "string_value"].values[0],
+            ],
+            "HEARTBEAT": [
+                df.loc[df["name"] == "IMND_ROBO03_HEARTBEAT", "string_value"].values[0],
+                df.loc[df["name"] == "IMND_ROBO05_HEARTBEAT", "string_value"].values[0],
+                df.loc[df["name"] == "IMND_ROBO06_HEARTBEAT", "string_value"].values[0],
+                df.loc[df["name"] == "IMND_ROBO07_HEARTBEAT", "string_value"].values[0],
+                df.loc[df["name"] == "IMND_ROBO08_HEARTBEAT", "string_value"].values[0],
+                df.loc[df["name"] == "IMND_ROBO16_HEARTBEAT", "string_value"].values[0],
+                df.loc[df["name"] == "IMND_ROBO17_HEARTBEAT", "string_value"].values[0],
+                df.loc[df["name"] == "IMND_ROBO18_HEARTBEAT", "string_value"].values[0],
+                df.loc[df["name"] == "IMND_ROBO19_HEARTBEAT", "string_value"].values[0],
+            ],
+        }
+        statusDf = pd.DataFrame(data)
+        
+        statusDf['authorization_datetime_value'] = pd.to_datetime(statusDf['ÚLTIMA AUTORIZAÇÃO'], format='%d/%m/%Y %H:%M:%S')
+        statusDf['heartbeat_datetime_value'] = pd.to_datetime(statusDf['HEARTBEAT'], format='%d/%m/%Y %H:%M:%S')
+
+        currentTime = datetime.now(timezone('America/Sao_Paulo')).replace(tzinfo=None)
+        statusDf['STATUS'] = statusDf.apply(determineStatus, axis=1, currentTime=currentTime)
+        
+        statusDf = statusDf[['COMPUTADOR', 'STATUS', 'ÚLTIMA AUTORIZAÇÃO']]
+        st.dataframe(statusDf, use_container_width=True)
     
     def showApprovalChart(self, df):
         labels = {
