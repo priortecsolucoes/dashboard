@@ -97,7 +97,7 @@ class main:
     
     def showStatusTable(self, df):
          data = {
-             "COMPUTADOR": ["IMND_ROBO3", "IMND_ROBO5", "IMND_ROBO6", "IMND_ROBO7", "IMND_ROBO8"],
+             "COMPUTADOR": ["IMND_ROBO3", "IMND_ROBO5", "IMND_ROBO6", "IMND_ROBO7", "IMND_ROBO8", "IMND_ROBO16", "IMND_ROBO17", "IMND_ROBO18", "IMND_ROBO19"],
              "ÚLTIMA AUTORIZAÇÃO": [
                  df.loc[df["name"] == "IMND_ROBO03_AUTORIZACAO_ULTIMO_REGISTRO", "string_value"].values[0],
                  df.loc[df["name"] == "IMND_ROBO05_AUTORIZACAO_ULTIMO_REGISTRO", "string_value"].values[0],
