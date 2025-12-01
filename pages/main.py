@@ -249,7 +249,7 @@ class main:
                     border-radius: 10px;
                     text-align: center;
                     font-size: 25px;
-                    width: 420px; 
+                    width: 300px; 
                     padding: 10px;
                     height: 200px;
                     margin: 10px auto;
@@ -298,7 +298,7 @@ class main:
                     border-radius: 10px;
                     text-align: center;
                     font-size: 25px;
-                    width: 420px; 
+                    width: 300px; 
                     padding: 10px;
                     height: 200px;
                     margin: 10px auto;
