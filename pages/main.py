@@ -210,16 +210,20 @@ class main:
                 .table-box table {
                     width: 100px;
                     border-collapse: collapse;
+                    font-size: 10px;
                 }
                 .table-box th, .table-box td {
                     border: 1px solid #ccc;
                     padding: 8px;
+                    font-size: 10px;
                 }
                 .table-box th {
                     background-color: #585858;
+                    font-size: 10px;
                 }
                 .bold-value {
                     font-weight: bold;
+                    font-size: 10px;
                 }
             </style>
         """, unsafe_allow_html=True)
