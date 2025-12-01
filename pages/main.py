@@ -203,8 +203,8 @@ class main:
                     text-align: center;
                     font-size: 20px;
                     width: 100px;
-                    padding: 15px;
-                    margin: 10px auto;
+                    padding: 20px;
+                    margin: 20px auto;
                     margin-left: 0px;
                 }
                 .table-box table {
