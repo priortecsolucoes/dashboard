@@ -302,7 +302,7 @@ class main:
             query = """
                 SELECT count(*) AS total_pendentes
                 FROM imnd_authorization
-                WHERE imnd_write_status != 'SUCESSO'
+                WHERE imnd_write_status is null or imnd_write_status != 'SUCESSO'
             """
             df = pd.read_sql_query(query, self.conn)
             if df.empty or 'total_pendentes' not in df.columns:
