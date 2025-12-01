@@ -104,7 +104,7 @@ class main:
             st.error(f"❌ Erro ao conectar ao banco de dados ou executar a consulta: {str(e)}")
             return pd.DataFrame()
 
-    def determineStatus(row, currentTime):
+    def determineStatus(self, row, currentTime):
         authMinutes = (currentTime - row['authorization_datetime_value']).total_seconds() / 60
         heartbeatMinutes = (currentTime - row['heartbeat_datetime_value']).total_seconds() / 60
         
