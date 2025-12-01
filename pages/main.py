@@ -201,7 +201,7 @@ class main:
                     border: 2px solid #ccc;
                     border-radius: 10px;
                     text-align: center;
-                    font-size: 14px;
+                    font-size: 10px;
                     width: 100px;
                     padding: 10px;
                     margin: 10px auto;
@@ -249,7 +249,7 @@ class main:
                     border-radius: 10px;
                     text-align: center;
                     font-size: 25px;
-                    width: 300px; 
+                    width: 280px; 
                     padding: 10px;
                     height: 200px;
                     margin: 10px auto;
@@ -298,7 +298,7 @@ class main:
                     border-radius: 10px;
                     text-align: center;
                     font-size: 25px;
-                    width: 300px; 
+                    width: 280px; 
                     padding: 10px;
                     height: 200px;
                     margin: 10px auto;
