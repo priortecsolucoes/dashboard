@@ -25,8 +25,9 @@ class DataExporter:
         self.deniedRecords = []
         self.ineligibleRecords = []
         self.headers = {
-            "Authorization": os.getenv("IMND_ACCESS_TOKEN"),
-            "Content-Type": "application/json"
+            "Authorization": f"Basic {os.getenv('IMND_ACCESS_TOKEN')}",
+            "Content-Type": "application/json",
+            "Accept": "application/json"
         }
 
     def requestWithRetries(self, url, maxRetries=2):
