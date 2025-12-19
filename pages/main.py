@@ -18,10 +18,12 @@ if not pagesAcess:
 access = pagesAcess[0]
 st.markdown("""
     <style>
-        div.block-container {padding-top: 20px !important;}
+        div.block-container {
+            padding-top: 20px !important;
         }
     </style>
     """, unsafe_allow_html=True)
+
 if 'admin' not in access:
     st.markdown("""
     <style>
@@ -72,6 +74,9 @@ class main:
                     'IMND_MES_ATUAL_PENDENTES',
                     'IMND_MES_ATUAL_INELEGIVEIS',
                     'IMND_MES_ATUAL_NEGADOS',
+                    'IMND_MES_ATUAL_PENDENCIAS_IMEDIATAS',
+                    'IMND_MES_ATUAL_FATURAVEIS_NEGADOS',
+                    'IMND_MES_ATUAL_FATURAVEIS_INELEGIVEIS',
                     'IMND_ROBO03_AUTORIZACAO_ULTIMO_REGISTRO',
                     'IMND_ROBO05_AUTORIZACAO_ULTIMO_REGISTRO',
                     'IMND_ROBO06_AUTORIZACAO_ULTIMO_REGISTRO',
@@ -156,6 +161,7 @@ class main:
         labels = {
             'IMND_MES_ATUAL_APROVADOS': 'Aprovados',
             'IMND_MES_ATUAL_PENDENTES': 'Pendentes',
+            'IMND_MES_ATUAL_PENDENCIAS_IMEDIATAS': 'Pendências Imediatas',
             'IMND_MES_ATUAL_INELEGIVEIS': 'Inelegíveis',
             'IMND_MES_ATUAL_NEGADOS': 'Negados'
         }
@@ -164,12 +170,17 @@ class main:
         dfFiltered = dfFiltered[['label', 'int_value']]
 
         # Ordenando para garantir que "Aprovados" seja o primeiro
-        dfFiltered = dfFiltered.set_index('label').loc[['Aprovados',  'Pendentes', 'Inelegíveis', 'Negados']].reset_index()
+        order = ['Aprovados', 'Pendentes', 'Pendências Imediatas', 'Inelegíveis', 'Negados']
+        dfFiltered = (
+            dfFiltered
+            .set_index('label')
+            .reindex(order, fill_value=0)
+            .reset_index()
+        )
 
         total = dfFiltered['int_value'].sum()
-
         # Definindo a paleta de cores para garantir que "Aprovados" será verde
-        palette = ['#4CAF50', '#F44336', '#FF9800', '#9E9E9E', '#2196F3']
+        palette = ['#4CAF50', '#F44336', '#FF7A00', '#FF9800', '#9E9E9E', '#2196F3']
 
         plt.figure(figsize=(8, 6), facecolor='#0E1117')
         ax = sns.barplot(x='label', y='int_value', data=dfFiltered,
@@ -192,108 +203,218 @@ class main:
 
 
     def showBillingTable(self, df):
-        faturaveisAutorizadas = df.loc[df["name"] == "IMND_MES_ATUAL_FATURAVEIS_AUTORIZADAS", "int_value"].values[0]
-        faturaveisNaoAutorizadas = df.loc[df["name"] == "IMND_MES_ATUAL_FATURAVEIS_NAO_AUTORIZADAS", "int_value"].values[0]
+        faturaveisAutorizadas = int(
+            df.loc[df["name"] == "IMND_MES_ATUAL_FATURAVEIS_AUTORIZADAS", "int_value"]
+            .fillna(0)
+            .head(1)
+            .iloc[0]
+        )
+        faturaveisNaoAutorizadas = int(
+            df.loc[df["name"] == "IMND_MES_ATUAL_FATURAVEIS_NAO_AUTORIZADAS", "int_value"]
+            .fillna(0)
+            .head(1)
+            .iloc[0]
+        )
+        faturaveisInelegiveis = int(
+            df.loc[df["name"] == "IMND_MES_ATUAL_FATURAVEIS_INELEGIVEIS", "int_value"]
+            .fillna(0)
+            .head(1)
+            .iloc[0]
+        )
+
+        faturaveisNegadas = int(
+            df.loc[df["name"] == "IMND_MES_ATUAL_FATURAVEIS_NEGADOS", "int_value"]
+            .fillna(0)
+            .head(1)
+            .iloc[0]
+        )
 
         st.markdown("""
             <style>
+            .table-box {
+                border: 2px solid #ccc;
+                border-radius: 12px;
+                text-align: center;
+                font-size: 18px;
+                padding: 16px;
+                width: 100%;
+                box-sizing: border-box;
+                overflow-x: auto;
+            }
+            .table-box h2 {
+                margin-bottom: 12px;
+                font-size: 20px;
+            }
+            .table-wrapper {
+                width: 100%;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch; /* Melhor scroll mobile */
+            }
+
+            .table-box table {
+                width: 100%;
+                min-width: 450px;
+                border-collapse: collapse;
+                /* REMOVA table-layout: fixed; */
+            }
+
+            .table-box th {
+                background-color: #585858;
+                font-weight: 600;
+                padding: 12px 8px;
+                font-size: 16px;
+                white-space: nowrap; 
+                border: 1px solid #555;
+            }
+
+            .table-box td {
+                border: 1px solid #555;
+                padding: 12px 8px;
+                font-size: 16px;
+                white-space: nowrap;
+            }
+
+            .bold-value {
+                font-weight: bold;
+                font-size: 17px;
+            }
+
+            .table-box th:nth-child(1) { min-width: 100px; }
+            .table-box th:nth-child(2) { min-width: 130px; }
+            .table-box th:nth-child(3) { min-width: 100px; }
+            .table-box th:nth-child(4) { min-width: 90px; }
+
+            /* 📱 Mobile */
+            @media (max-width: 768px) {
                 .table-box {
-                    border: 2px solid #ccc;
-                    border-radius: 10px;
-                    text-align: center;
-                    font-size: 20px;
-                    width: 100px;
-                    padding: 20px;
-                    margin: 20px auto;
-                    margin-left: 0px;
+                    padding: 12px;
                 }
+                
+                .table-box h2 {
+                    font-size: 18px;
+                }
+
                 .table-box table {
-                    width: 100px;
-                    border-collapse: collapse;
-                    font-size: 20px;
+                    min-width: 400px;
                 }
-                .table-box th, .table-box td {
-                    border: 1px solid #ccc;
-                    padding: 8px;
-                    font-size: 18px;
+
+                .table-box th,
+                .table-box td {
+                    font-size: 14px;
+                    padding: 10px 6px;
                 }
-                .table-box th {
-                    background-color: #585858;
-                    font-size: 20px;
-                }
+                
                 .bold-value {
-                    font-weight: bold;
-                    font-size: 18px;
+                    font-size: 15px;
                 }
+                
+                .table-box th:nth-child(1) { min-width: 90px; }
+                .table-box th:nth-child(2) { min-width: 110px; }
+                .table-box th:nth-child(3) { min-width: 90px; }
+                .table-box th:nth-child(4) { min-width: 80px; }
+            }
+            
+            /* 📱 Mobile muito pequeno */
+            @media (max-width: 480px) {
+                .table-box table {
+                    min-width: 350px;
+                }
+                
+                .table-box th,
+                .table-box td {
+                    font-size: 13px;
+                    padding: 8px 4px;
+                }
+                
+                .table-box th:nth-child(2) { 
+                    font-size: 12.5px; /* Reduz um pouco para "Não Autorizadas" */
+                }
+            }
             </style>
-        """, unsafe_allow_html=True)
+            """, unsafe_allow_html=True)
 
         st.markdown(f"""
             <div class="table-box">
                 <h2>Consultas Faturáveis</h2>
-                <table>
-                    <tr>
-                        <th>Autorizadas</th>
-                        <th>Não Autorizadas</th>
-                    </tr>
-                    <tr>
-                        <td class="bold-value"><strong>{faturaveisAutorizadas}</strong></td>
-                        <td class="bold-value"><strong>{faturaveisNaoAutorizadas}</strong></td>
-                    </tr>
-                </table>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Aprovadas</th>
+                                <th>Não Autorizadas</th>
+                                <th>Inelegíveis</th>
+                                <th>Negadas</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="bold-value">{faturaveisAutorizadas}</td>
+                                <td class="bold-value">{faturaveisNaoAutorizadas}</td>
+                                <td class="bold-value">{faturaveisInelegiveis}</td>
+                                <td class="bold-value">{faturaveisNegadas}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
-        """, unsafe_allow_html=True)
-
+            """, unsafe_allow_html=True)
 
     def showPendingTable(self, df):
         st.markdown("""
             <style>
                 .table-box {
                     border: 2px solid #ccc;
-                    border-radius: 10px;
+                    border-radius: 12px;
                     text-align: center;
-                    font-size: 25px;
-                    width: 280px; 
-                    padding: 10px;
-                    height: 200px;
-                    margin: 10px auto;
-                    margin-left: 0px;
-                }
 
-                .table-box table {
-                    width: 100%;
-                    border-collapse: collapse;
-                }
+                    /* Responsividade */
+                    width: 90%;
+                    max-width: 320px;
+                    padding: 16px;
+                    margin: 12px auto;
 
-                .table-box th, .table-box td {
-                    border: 1px solid #ccc;
-                    padding: 8px;
-                }
-
-                .table-box th {
-                    background-color: #585858;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
                 }
 
                 .table-box h2 {
-                    font-size: 20px;
+                    font-size: clamp(16px, 4vw, 20px);
+                    margin-bottom: 8px;
                 }
 
                 .pending-value {
-                    font-size: 55px;
+                    font-size: clamp(36px, 8vw, 55px);
                     font-weight: bold;
-                    margin-top: 10px;
+                }
+                @media (max-width: 768px) {
+                    .table-box {
+                        max-width: 90%;
+                        padding: 12px;
+                    }
+                }
+                @media (max-width: 480px) {
+                    .table-box h2 {
+                        font-size: 16px;
+                    }
+                    .pending-value {
+                        font-size: 40px;
+                    }
                 }
             </style>
         """, unsafe_allow_html=True)
 
-        pending_value = df.loc[df["name"] == "IMND_AUTORIZACAO_PENDENTES_ATRASADOS_MES_ATUAL", "int_value"].values[0]
+        pending_value = df.loc[
+            df["name"] == "IMND_AUTORIZACAO_PENDENTES_ATRASADOS_MES_ATUAL",
+            "int_value"
+        ].values[0]
+
         st.markdown(f"""
             <div class="table-box">
                 <h2>Consultas Pendentes Atrasadas</h2>
-                <div class="pending-value"><strong>{pending_value}</strong></div>
+                <div class="pending-value">{pending_value}</div>
             </div>
         """, unsafe_allow_html=True)
-
     def showIntegratorPendingTable(self, df):
         st.markdown("""
             <style>
