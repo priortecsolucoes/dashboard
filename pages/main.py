@@ -237,7 +237,7 @@ class main:
                 text-align: center;
                 font-size: 18px;
                 padding: 16px;
-                width: 100%;
+                width: 600px;
                 box-sizing: border-box;
                 overflow-x: auto;
             }
@@ -248,30 +248,33 @@ class main:
             .table-wrapper {
                 width: 100%;
                 overflow-x: auto;
-                -webkit-overflow-scrolling: touch; /* Melhor scroll mobile */
+                -webkit-overflow-scrolling: touch;
             }
 
             .table-box table {
+                /* 🔥 Alteração: table-layout definido como 'fixed' */
+                table-layout: fixed;
                 width: 100%;
-                min-width: 450px;
-                border-collapse: collapse;
-                /* REMOVA table-layout: fixed; */
+                min-width: fit-content;
             }
 
             .table-box th {
                 background-color: #585858;
-                font-weight: 600;
-                padding: 12px 8px;
-                font-size: 16px;
-                white-space: nowrap; 
+                font-weight: 500;          /* 🔽 menos "grosso" */
+                padding: 6px 6px 6px 10px; /* 🔽 menos altura + mais à esquerda */
+                font-size: 11px;           /* 🔽 texto menor */
+                line-height: 1.15;         /* 🔽 reduz altura da linha */
+                text-align: left;          /* ✅ alinha à esquerda */
+                white-space: normal;
                 border: 1px solid #555;
             }
+
 
             .table-box td {
                 border: 1px solid #555;
                 padding: 12px 8px;
                 font-size: 16px;
-                white-space: nowrap;
+                white-space: normal;
             }
 
             .bold-value {
@@ -279,10 +282,10 @@ class main:
                 font-size: 17px;
             }
 
-            .table-box th:nth-child(1) { min-width: 100px; }
+            .table-box th:nth-child(1) { min-width: 170px; }
             .table-box th:nth-child(2) { min-width: 130px; }
             .table-box th:nth-child(3) { min-width: 100px; }
-            .table-box th:nth-child(4) { min-width: 90px; }
+            .table-box th:nth-child(4) { min-width: 100px; }
 
             /* 📱 Mobile */
             @media (max-width: 768px) {
@@ -522,6 +525,7 @@ class main:
                     self.showPendingTable(df)
                 with inner_col3:
                     self.showIntegratorPendingTable(df)
+
  
                 # Adicionando espaço antes dos botões e centralizando-os
                 st.markdown("""
@@ -649,7 +653,7 @@ class main:
                             st.warning("Nenhum dado encontrado para exportação.")
                 
             with col2:
-                st.subheader("📈 Aprovação de Consultas")
+                st.subheader(f"📈 Aprovação de Consultas")
                 self.showApprovalChart(df)
                 self.showLastExecutionDate(df)
         except Exception as e:

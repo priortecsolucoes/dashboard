@@ -61,6 +61,7 @@ class DataExporter:
                 apiUrl = (f"https://imnd.com.br/api/automation/appointments?page={page}&"
                           f"status=scheduled,fulfilled,notaccomplished&limit=1000&"
                           f"date_start={dateStart}&date_end={dateEnd}")
+
                 print(f"🔄 Requisitando página {page}...")
                 requisicao = self.requestWithRetries(apiUrl)
                 if requisicao is None:
