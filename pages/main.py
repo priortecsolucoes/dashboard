@@ -414,7 +414,7 @@ class main:
 
         st.markdown(f"""
             <div class="table-box">
-                <h1>Consultas Pendentes Atrasadas (< D-3) </h1>
+                <h2>Consultas Pendentes Atrasadas </h2>
                 <div class="pending-value">{pending_value}</div>
             </div>
         """, unsafe_allow_html=True)
