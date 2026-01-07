@@ -160,8 +160,8 @@ class main:
     def showApprovalChart(self, df):
         labels = {
             'IMND_MES_ATUAL_APROVADOS': 'Aprovados',
-            'IMND_MES_ATUAL_PENDENCIAS_IMEDIATAS': 'Pendentes D e D+1',
-            'IMND_MES_ATUAL_PENDENTES': 'Demais Pendentes',
+            'IMND_MES_ATUAL_PENDENTES': 'Pendentes',
+            'IMND_MES_ATUAL_PENDENCIAS_IMEDIATAS': 'Pendências Imediatas',
             'IMND_MES_ATUAL_INELEGIVEIS': 'Inelegíveis',
             'IMND_MES_ATUAL_NEGADOS': 'Negados'
         }
@@ -170,7 +170,7 @@ class main:
         dfFiltered = dfFiltered[['label', 'int_value']]
 
         # Ordenando para garantir que "Aprovados" seja o primeiro
-        order = ['Aprovados', 'Pendentes D e D+1', 'Demais Pendentes', 'Inelegíveis', 'Negados']
+        order = ['Aprovados', 'Pendentes', 'Pendências Imediatas', 'Inelegíveis', 'Negados']
         dfFiltered = (
             dfFiltered
             .set_index('label')
@@ -414,7 +414,7 @@ class main:
 
         st.markdown(f"""
             <div class="table-box">
-                <h2>Consultas Pendentes Atrasadas </h2>
+                <h2>Consultas Pendentes Atrasadas</h2>
                 <div class="pending-value">{pending_value}</div>
             </div>
         """, unsafe_allow_html=True)
@@ -502,22 +502,37 @@ class main:
                 <h2>{last_execution_date}</h2>
             </div>
         """, unsafe_allow_html=True)
+    def requestExport(self, label, processFn, sessionKey):
+        if st.button(label):
+            st.toast('Gerando arquivo...', icon="⏳")
+            output, filename = processFn()
+
+            if output:
+                st.session_state[sessionKey] = {
+                    "data": output,
+                    "filename": filename
+                }
+            else:
+                st.warning("Nenhum dado encontrado para exportação.")
 
 
-    
     def main(self):
         st.subheader("📊 IMND - Portal do Cliente - Priortec")
+
         try:
             with st.spinner('Carregando dados...'):
                 df = self.getAllDataFromDb()
+
             if df.empty:
                 st.warning("Nenhum dado foi retornado da consulta.")
                 return
- 
+
             col1, col2 = st.columns([1, 0.5])
+
             with col1:
                 st.subheader("📌 Status dos Computadores")
                 self.showStatusTable(df)
+
                 inner_col1, inner_col2, inner_col3 = st.columns(3)
                 with inner_col1:
                     self.showBillingTable(df)
@@ -526,139 +541,153 @@ class main:
                 with inner_col3:
                     self.showIntegratorPendingTable(df)
 
- 
-                # Adicionando espaço antes dos botões e centralizando-os
                 st.markdown("""
                     <style>
                         .custom-button-container {
                             display: flex;
                             gap: 20px;
                             margin: auto;
- 
+                        }
+
+                        div.stButton > button {
+                            width: 100% !important;
+                            height: 70px !important;
+                            padding: 10px !important;
+                            font-size: 16px !important;
+                            font-weight: bold !important;
+                            border-radius: 8px !important;
+                            border: none !important;
+                            transition: 0.3s ease-in-out;
+                        }
+
+                        div.stButton > button:hover {
+                            background-color: #fff !important;
+                            color: #000 !important;
+                        }
+
+                        div.stDownloadButton > button {
+                            width: 100% !important;
+                            padding: 8px !important;
+                            font-size: 14px !important;
                         }
                     </style>
                 """, unsafe_allow_html=True)
- 
-                # Criando um container para os botões centralizados
-                st.markdown('<div class="custom-button-container">', unsafe_allow_html=True)
-                
-                # 📥 Instância do DataExporter
+
                 exporter = DataExporter()
-
-                # 📊 Exportação de Planilhas
                 st.subheader("📌 Exportar Planilhas")
-                col_exp1, col_exp2, col_exp3, col_exp4, col_exp5 = st.columns(5)
-                    
-                st.markdown(
-                    """
-                    <style>
-                    div.stButton > button {
-                        width: 100% !important;  /* Garante que todos os botões tenham o mesmo tamanho */
-                        height: 70px !important;
-                        padding: 10px !important;
-                        font-size: 16px !important;
-                        font-weight: bold !important;
-                        border-radius: 8px !important;
-                        border: none !important;
-                        transition: 0.3s ease-in-out;
-                    }
-                    
-                    div.stButton > button:hover {
-                        background-color: #fff !important; /* Azul mais escuro no hover */
-                        color: #000 !important;
-                    }
-                    
-                    div.stDownloadButton > button {
-                        width: 100% !important; /* Mantém os botões de download alinhados */
-                        padding: 8px !important;
-                        font-size: 14px !important;
-                    }
-                    </style>
-                    """,
-                    unsafe_allow_html=True
-                )
 
-                # 🔹 Simulando colunas para exibição
                 col_exp1, col_exp2, col_exp3, col_exp4, col_exp5 = st.columns(5)
 
-                # 🚫 Consulta apenas ao clicar no botão
                 with col_exp1:
-                    if st.button('Solicitar Consultas Não Autorizadas'):
-                        st.toast('Gerando arquivo...', icon="⏳")
-                        output, filename = exporter.processNotBillableQueries()
-                        if output:
-                            st.download_button(
-                                label="📥 Baixar Consultas Não Autorizadas",
-                                data=output,
-                                file_name=filename,
-                                mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-                            )
-                        else:
-                            st.warning("Nenhum dado encontrado para exportação.")
+                    self.requestExport(
+                        'Solicitar Consultas Não Autorizadas',
+                        exporter.processNotBillableQueries,
+                        'export_not_billable'
+                    )
 
                 with col_exp2:
-                    if st.button('Solicitar Consultas Pendentes Atrasadas'):
-                        st.toast('Gerando arquivo...', icon="⏳")
-                        output, filename = exporter.checkPendingAuthorizationForCurrentMonth()
-                        if output:
-                            st.download_button(
-                                label="📥 Baixar Consultas Pendentes Atrasadas",
-                                data=output,
-                                file_name=filename,
-                                mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-                            )
-                        else:
-                            st.warning("Nenhum dado encontrado para exportação.")
+                    self.requestExport(
+                        'Solicitar Consultas Pendentes Atrasadas',
+                        exporter.checkPendingAuthorizationForCurrentMonth,
+                        'export_pending'
+                    )
 
                 with col_exp3:
-                    if st.button('Solicitar Consultas Autorizadas'):
-                        st.toast('Gerando arquivo...', icon="⏳")
-                        output, filename = exporter.processBillableQueries()
-                        if output:
-                            st.download_button(
-                                label="📥 Baixar Consultas Autorizadas",
-                                data=output,
-                                file_name=filename,
-                                mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-                            )
-                        else:
-                            st.warning("Nenhum dado encontrado para exportação.")
+                    self.requestExport(
+                        'Solicitar Consultas Autorizadas',
+                        exporter.processBillableQueries,
+                        'export_billable'
+                    )
 
                 with col_exp4:
-                    if st.button('Solicitar Consultas Negadas'):  # 🔹 Removidos espaços extras
-                        st.toast('Gerando arquivo...', icon="⏳")
-                        output, filename = exporter.processDeniedQueries()
-                        if output:
-                            st.download_button(
-                                label="📥 Baixar Consultas Negadas",
-                                data=output,
-                                file_name=filename,
-                                mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-                            )
-                        else:
-                            st.warning("Nenhum dado encontrado para exportação.")
+                    self.requestExport(
+                        'Solicitar Consultas Negadas',
+                        exporter.processDeniedQueries,
+                        'export_denied'
+                    )
 
                 with col_exp5:
-                    if st.button('Solicitar Consultas Inelegíveis'):  # 🔹 Corrigido erro de digitação
-                        st.toast('Gerando arquivo...', icon="⏳")
-                        output, filename = exporter.processIneligibleQueries()
-                        if output:
-                            st.download_button(
-                                label="📥 Baixar Consultas Inelegíveis",
-                                data=output,
-                                file_name=filename,
-                                mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-                            )
-                        else:
-                            st.warning("Nenhum dado encontrado para exportação.")
-                
+                    self.requestExport(
+                        'Solicitar Consultas Inelegíveis',
+                        exporter.processIneligibleQueries,
+                        'export_ineligible'
+                    )
+                st.markdown("### 📥 Downloads disponíveis")
+
+                for key, label in {
+                    'export_not_billable': 'Consultas Não Autorizadas',
+                    'export_pending': 'Consultas Pendentes Atrasadas',
+                    'export_billable': 'Consultas Autorizadas',
+                    'export_denied': 'Consultas Negadas',
+                    'export_ineligible': 'Consultas Inelegíveis'
+                }.items():
+                    if key in st.session_state:
+                        st.download_button(
+                            label=f"📥 Baixar {label}",
+                            data=st.session_state[key]['data'],
+                            file_name=st.session_state[key]['filename'],
+                            mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                            key=f"download_{key}"
+                        )
             with col2:
-                st.subheader(f"📈 Aprovação de Consultas")
+                st.subheader("📈 Aprovação de Consultas")
                 self.showApprovalChart(df)
                 self.showLastExecutionDate(df)
+
         except Exception as e:
             st.error(f"❌ Ocorreu um erro inesperado: {str(e)}")
 
 if __name__ == "__main__":
     app = main()
     app.main()
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
