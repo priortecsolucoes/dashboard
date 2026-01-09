@@ -101,7 +101,7 @@ class DataExporter:
     def checkPendingAuthorizationForCurrentMonth(self):
         nodes = self.loadData()
         today = date.today()
-        limitDate = today - timedelta(days=3)
+        
         for node in nodes:
             try:
                 nodeDateTimeStr = node.get("data", "01/01/1970")
@@ -109,7 +109,7 @@ class DataExporter:
                 nodeMotivation = (node.get("motivacao") or "").lower().strip()
                 nodeStatus = node.get("metas", {}).get("ts_status")
 
-                if (limitDate <= nodeDateTime or nodeDateTime > today) and \
+                if (nodeDateTime <= today) and \
                    nodeMotivation in self.motivations and \
                    (nodeStatus is None or nodeStatus == ""):
                     self.pendingAuthorizationInArrearsCurrentMonth.append(node)
@@ -122,9 +122,7 @@ class DataExporter:
     def processNotBillableQueries(self):
         nodes = self.loadData()
         today = date.today()
-        limitDate = today - timedelta(days=3)
-        startOfMonth = today.replace(day=1)
-
+        
         for node in nodes:
             try:
                 nodeDateTimeStr = node.get("data", "01/01/1970")
@@ -132,7 +130,7 @@ class DataExporter:
                 nodeMotivation = (node.get("motivacao") or "").lower().strip()
                 nodeStatus = node.get("metas", {}).get("ts_status")
 
-                if startOfMonth <= nodeDateTime < limitDate and nodeMotivation in self.motivations and (nodeStatus is None or nodeStatus == ""):
+                if nodeDateTime <= today and nodeMotivation in self.motivations and (nodeStatus is None or nodeStatus == ""):
                     self.billableNotAuthorized.append(node)
             except ValueError as erro:
                 print(f"❌ Erro ao converter data '{node.get('data', 'Desconhecida')}': {erro}")
@@ -143,8 +141,7 @@ class DataExporter:
     def processBillableQueries(self):
         nodes = self.loadData()
         today = date.today()
-        limitDate = today - timedelta(days=3)
-
+        
         for node in nodes:
             try:
                 nodeDateTimeStr = node.get("data", "01/01/1970")
@@ -152,7 +149,7 @@ class DataExporter:
                 nodeMotivation = (node.get("motivacao") or "").lower().strip()
                 nodeStatus = (node.get("metas", {}).get("ts_status") or "").lower().strip()
 
-                if nodeDateTime <= limitDate and nodeMotivation in self.motivations and nodeStatus == "aprovado":
+                if nodeDateTime <= today and nodeMotivation in self.motivations and nodeStatus == "aprovado":
                     self.authorizedBillable.append(node)
             except ValueError as erro:
                 print(f"❌ Erro ao converter data '{node.get('data', 'Desconhecida')}': {erro}")
@@ -163,14 +160,16 @@ class DataExporter:
 
     def processDeniedQueries(self):
         nodes = self.loadData()
+        today = date.today()
 
         for node in nodes:
             try:
                 nodeDateTimeStr = node.get("data", "01/01/1970")
                 nodeDateTime = datetime.strptime(nodeDateTimeStr, "%d/%m/%Y").date()
                 nodeStatus = (node.get("metas", {}).get("ts_status") or "").lower().strip()
+                nodeMotivation = (node.get("motivacao") or "").lower().strip()
 
-                if nodeStatus == "negado":
+                if nodeDateTime <= today and nodeMotivation in self.motivations and nodeStatus == "negado":
                     self.deniedRecords.append(node)
             except ValueError as erro:
                 print(f"\u274C Erro ao converter data '{node.get('data', 'Desconhecida')}': {erro}")
@@ -180,14 +179,16 @@ class DataExporter:
 
     def processIneligibleQueries(self):
         nodes = self.loadData()
+        today = date.today()
 
         for node in nodes:
             try:
                 nodeDateTimeStr = node.get("data", "01/01/1970")
                 nodeDateTime = datetime.strptime(nodeDateTimeStr, "%d/%m/%Y").date()
                 nodeStatus = (node.get("metas", {}).get("ts_status") or "").lower().strip()
+                nodeMotivation = (node.get("motivacao") or "").lower().strip()
 
-                if nodeStatus == "inelegível":
+                if nodeDateTime <= today and nodeMotivation in self.motivations and nodeStatus == "inelegível":
                     self.ineligibleRecords.append(node)
             except ValueError as erro:
                 print(f"\u274C Erro ao converter data '{node.get('data', 'Desconhecida')}': {erro}")
