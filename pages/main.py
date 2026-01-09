@@ -160,8 +160,8 @@ class main:
     def showApprovalChart(self, df):
         labels = {
             'IMND_MES_ATUAL_APROVADOS': 'Aprovados',
-            'IMND_MES_ATUAL_PENDENTES': 'Pendentes',
-            'IMND_MES_ATUAL_PENDENCIAS_IMEDIATAS': 'Pendências Imediatas',
+            'IMND_MES_ATUAL_PENDENTES': 'Pendentes D',
+            'IMND_MES_ATUAL_PENDENCIAS_IMEDIATAS': 'Pendentes D+1',
             'IMND_MES_ATUAL_INELEGIVEIS': 'Inelegíveis',
             'IMND_MES_ATUAL_NEGADOS': 'Negados'
         }
