@@ -170,7 +170,7 @@ class main:
         dfFiltered = dfFiltered[['label', 'int_value']]
 
         # Ordenando para garantir que "Aprovados" seja o primeiro
-        order = ['Aprovados', 'Pendentes', 'Pendências Imediatas', 'Inelegíveis', 'Negados']
+        order = ['Aprovados', 'Pendentes D', 'Pendentes D+1', 'Inelegíveis', 'Negados']
         dfFiltered = (
             dfFiltered
             .set_index('label')
