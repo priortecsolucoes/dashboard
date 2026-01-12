@@ -17,7 +17,8 @@ class DataExporter:
             "atendimento pontual", 
             "alta",
             "emergência do cliente",
-            "atendimento interrompido pelo cliente"
+            "atendimento interrompido pelo cliente",
+            "questão pessoal ou emergência do cliente"
         }
         self.pendingAuthorizationInArrearsCurrentMonth = []
         self.billableNotAuthorized = []
