@@ -11,6 +11,11 @@ import os
 class DataExporter:
     def __init__(self):
         load_dotenv()
+
+        self.accessToken = os.getenv('IMND_ACCESS_TOKEN')
+        if not self.accessToken:
+            raise EnvironmentError("A variável de ambiente 'IMND_ACCESS_TOKEN' não foi encontrada")
+        
         self.motivations = {
             "atendimento recorrente",
             "atendimento sos",
@@ -25,17 +30,12 @@ class DataExporter:
         self.authorizedBillable = []
         self.deniedRecords = []
         self.ineligibleRecords = []
-        self.headers = {
-            "Authorization": f"Basic {os.getenv('IMND_ACCESS_TOKEN')}",
-            "Content-Type": "application/json",
-            "Accept": "application/json"
-        }
 
     def requestWithRetries(self, url, maxRetries=2):
         attempt = 0
         while attempt <= maxRetries:
             try:
-                response = requests.get(url, headers=self.headers)
+                response = requests.get(url)
                 response.raise_for_status()
                 return response
             except requests.RequestException as e:
@@ -59,7 +59,7 @@ class DataExporter:
             self.allNodes = []
 
             while hasMore:
-                apiUrl = (f"https://imnd.com.br/api/automation/appointments?page={page}&"
+                apiUrl = (f"http:/api.imnd.com.br:3000/api/automation/appointments?authorization={self.accessToken}&page={page}&"
                           f"status=scheduled,fulfilled,notaccomplished,rescheduled,inprogress,rescheduled_24,notaccomplished_24&limit=1000&"
                           f"date_start={dateStart}&date_end={dateEnd}")
 
