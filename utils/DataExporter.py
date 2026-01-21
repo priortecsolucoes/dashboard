@@ -18,8 +18,7 @@ class DataExporter:
             "alta",
             "emergência do cliente",
             "atendimento interrompido pelo cliente",
-            "questão pessoal ou emergência do cliente",
-            "motivo desconhecido"
+            "questão pessoal ou emergência do cliente"
         }
         self.pendingAuthorizationInArrearsCurrentMonth = []
         self.billableNotAuthorized = []
