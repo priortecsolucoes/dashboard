@@ -60,7 +60,7 @@ class DataExporter:
 
             while hasMore:
                 apiUrl = (f"http://api.imnd.com.br:3000/api/automation/appointments?authorization={self.accessToken}&page={page}&"
-                          f"status=scheduled,fulfilled,notaccomplished,rescheduled,inprogress,rescheduled_24,notaccomplished_24&limit=1000&"
+                          f"status=scheduled,fulfilled,notaccomplished,rescheduled,inprogress,rescheduled_24,notaccomplished_24&limit=10000&"
                           f"date_start={dateStart}&date_end={dateEnd}")
 
                 print(f"🔄 Requisitando página {page}...")
