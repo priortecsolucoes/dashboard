@@ -75,6 +75,7 @@ class main:
                     'IMND_MES_ATUAL_INELEGIVEIS',
                     'IMND_MES_ATUAL_NEGADOS',
                     'IMND_MES_ATUAL_PENDENCIAS_IMEDIATAS',
+                    'IMND_MES_ATUAL_PENDENCIAS_DIA_ATUAL',
                     'IMND_MES_ATUAL_FATURAVEIS_NEGADOS',
                     'IMND_MES_ATUAL_FATURAVEIS_INELEGIVEIS',
                     'IMND_ROBO03_AUTORIZACAO_ULTIMO_REGISTRO',
@@ -160,8 +161,9 @@ class main:
     def showApprovalChart(self, df):
         labels = {
             'IMND_MES_ATUAL_APROVADOS': 'Aprovados',
-            'IMND_MES_ATUAL_PENDENTES': 'Pendentes D',
+            'IMND_MES_ATUAL_PENDENCIAS_DIA_ATUAL': 'Pendentes D',
             'IMND_MES_ATUAL_PENDENCIAS_IMEDIATAS': 'Pendentes D+1',
+            'IMND_MES_ATUAL_PENDENTES': 'Demais Pendentes'
             'IMND_MES_ATUAL_INELEGIVEIS': 'Inelegíveis',
             'IMND_MES_ATUAL_NEGADOS': 'Negados'
         }
