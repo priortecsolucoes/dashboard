@@ -163,7 +163,7 @@ class main:
             'IMND_MES_ATUAL_APROVADOS': 'Aprovados',
             'IMND_MES_ATUAL_PENDENCIAS_DIA_ATUAL': 'Pendentes D',
             'IMND_MES_ATUAL_PENDENCIAS_IMEDIATAS': 'Pendentes D+1',
-            'IMND_MES_ATUAL_PENDENTES': 'Demais Pendentes'
+            'IMND_MES_ATUAL_PENDENTES': 'Demais Pendentes',
             'IMND_MES_ATUAL_INELEGIVEIS': 'Inelegíveis',
             'IMND_MES_ATUAL_NEGADOS': 'Negados'
         }
